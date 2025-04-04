@@ -1,9 +1,15 @@
 package org.example.projetjava;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -159,23 +165,14 @@ public class MainController {
             String niveau = getSelectedNiveau();
             String avion = getSelectedAvion();
 
-            // Si joueur existant, demander confirmation pour mise à jour
-            if (!"Nouveau joueur".equals(playerComboBox.getValue())) {
-                if (!confirmUpdatePlayer(nomJoueur)) {
-                    return; // L'utilisateur a annulé
-                }
-            }
-
-            // Enregistrement/mise à jour en base
-            ConnexionBD.enregistrerJoueur(nomJoueur, niveau, avion);
-
-            // Mise à jour de la ComboBox si nouveau joueur
+            // Enregistrement en base si nouveau joueur
             if ("Nouveau joueur".equals(playerComboBox.getValue())) {
+                ConnexionBD.enregistrerJoueur(nomJoueur, niveau, avion);
                 playerComboBox.getItems().add(nomJoueur);
-                playerComboBox.getSelectionModel().select(nomJoueur);
             }
 
-            showAlert("Succès", "Configuration enregistrée pour " + nomJoueur);
+            // Lancer la transition au lieu du jeu directement
+            launchTransition(nomJoueur, niveau, avion);
 
         } catch (Exception e) {
             showAlert("Erreur", e.getMessage());
@@ -222,5 +219,25 @@ public class MainController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    private void launchTransition(String playerName, String niveau, String avion) {
+        try {
+            // 1. Charger le FXML de transition
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/projetjava/Jeu.fxml"));
+            Parent root = loader.load();
+
+            // 2. Initialiser le contrôleur de transition
+            JeuController transitionController = loader.getController();
+            transitionController.showTransition(playerName);
+
+            // 3. Afficher la scène de transition
+            Stage stage = (Stage) start.getScene().getWindow();
+            stage.setScene(new Scene(root, 800, 600));
+            stage.show();
+
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible de charger l'écran de transition");
+            e.printStackTrace();
+        }
     }
 }

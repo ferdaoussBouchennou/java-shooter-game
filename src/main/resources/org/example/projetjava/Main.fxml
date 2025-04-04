@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -20,6 +21,9 @@
          <image>
             <Image url="@kenney_space-shooter-redux/Backgrounds/darkPurple.png" />
          </image>
+         <cursor>
+            <Cursor fx:constant="DEFAULT" />
+         </cursor>
       </ImageView>
       <ImageView fx:id="image4" fitHeight="549.0" fitWidth="626.0" pickOnBounds="true" preserveRatio="true" />
       <Label layoutX="67.0" layoutY="102.0" text="Joueur :" textFill="WHITE">
@@ -37,9 +41,9 @@
          </effect>
       </ComboBox>
       <TextField fx:id="playerNameField" layoutX="341.0" layoutY="99.0" promptText="Entrez votre nom" />
-      <Label layoutX="121.0" layoutY="22.0" text="Bienvenue dans le jeu !" textFill="#cfaafa">
+      <Label layoutX="91.0" layoutY="23.0" text="Bienvenue dans le jeu " textFill="#cfaafa">
          <font>
-            <Font name="Comic Sans MS Italic" size="35.0" />
+            <Font name="Copperplate Gothic Bold" size="35.0" />
          </font>
       </Label>
       <Label layoutX="67.0" layoutY="153.0" text="Niveau :" textFill="WHITE">
@@ -53,15 +57,24 @@
          </toggleGroup>
          <font>
             <Font size="13.0" />
-         </font></RadioButton>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></RadioButton>
       <RadioButton fx:id="niveauIntermediaire" layoutX="279.0" layoutY="154.0" mnemonicParsing="false" text="Intermédiaire" textFill="WHITE" toggleGroup="$niveauGroup">
          <font>
             <Font size="13.0" />
-         </font></RadioButton>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></RadioButton>
       <RadioButton fx:id="niveauHaut" layoutX="431.0" layoutY="154.0" mnemonicParsing="false" text="Haut niveau" textFill="WHITE" toggleGroup="$niveauGroup">
          <font>
             <Font size="13.0" />
-         </font></RadioButton>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></RadioButton>
       <Label layoutX="198.0" layoutY="198.0" text="Choisir un avion pour commencer :" textFill="WHITE">
          <font>
             <Font name="System Bold" size="14.0" />
@@ -77,7 +90,7 @@
             <Image url="@kenney_space-shooter-redux/PNG/playerShip2_orange.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="image3" fitWidth="100.0" layoutX="333.0" layoutY="245.0">
+      <ImageView fx:id="image3" fitWidth="100.0" layoutX="329.0" layoutY="245.0">
          <image>
             <Image url="@kenney_space-shooter-redux/PNG/playerShip3_green.png" />
          </image>
@@ -88,19 +101,31 @@
          </toggleGroup>
          <font>
             <Font size="13.0" />
-         </font></RadioButton>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></RadioButton>
       <RadioButton fx:id="button2" layoutX="185.0" layoutY="348.0" mnemonicParsing="false" text="FIA-28A" textFill="WHITE" toggleGroup="$avionGroup">
          <font>
             <Font size="13.0" />
-         </font></RadioButton>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></RadioButton>
       <RadioButton fx:id="button3" layoutX="339.0" layoutY="348.0" mnemonicParsing="false" text="X-Wing" textFill="WHITE" toggleGroup="$avionGroup">
          <font>
             <Font size="13.0" />
-         </font></RadioButton>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></RadioButton>
       <RadioButton fx:id="button4" layoutX="480.0" layoutY="348.0" mnemonicParsing="false" text="DarkStar" textFill="WHITE" toggleGroup="$avionGroup">
          <font>
             <Font size="13.0" />
-         </font></RadioButton>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></RadioButton>
       <ProgressBar fx:id="prog1" layoutX="34.0" layoutY="394.0" prefHeight="18.0" prefWidth="133.0" progress="0.0" />
       <ProgressBar fx:id="prog2" layoutX="237.0" layoutY="394.0" prefHeight="18.0" prefWidth="133.0" progress="0.0" />
       <ProgressBar fx:id="prog3" layoutX="433.0" layoutY="394.0" prefHeight="18.0" prefWidth="133.0" progress="0.0" />
