@@ -1,5 +1,6 @@
 package org.example.projetjava;
 
+import javafx.animation.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,15 +26,48 @@ public class MainController {
     @FXML private ToggleGroup niveauGroup, avionGroup;
     @FXML private RadioButton niveauDebutant, niveauIntermediaire, niveauHaut;
     @FXML private Label vitesseLabel, puissanceLabel, vieLabel;
+    @FXML private Label welcomeLabel;
 
     @FXML
     public void initialize() {
+        animateWelcomeTitle();
         loadExistingPlayers(); // Charger les joueurs existants au démarrage
         setupPlayerSelection();
         setupNiveauSelection();
         setupAvionSelection();
         loadAvionImages();
         setupButtonActions();
+    }
+    private void animateWelcomeTitle() {
+        // Réinitialiser la position et l'opacité (au cas où)
+        welcomeLabel.setOpacity(0);
+        welcomeLabel.setTranslateY(-20);
+
+        // 1. FadeIn + SlideDown
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.01), welcomeLabel);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        TranslateTransition slideDown = new TranslateTransition(Duration.seconds(1.5), welcomeLabel);
+        slideDown.setFromY(-20);
+        slideDown.setToY(0);
+
+        // 2. Pulse (zoom léger répété)
+        ScaleTransition pulse = new ScaleTransition(Duration.seconds(0.5), welcomeLabel);
+        pulse.setFromX(1);
+        pulse.setFromY(1);
+        pulse.setToX(1.1);
+        pulse.setToY(1.1);
+        pulse.setAutoReverse(true);
+        pulse.setCycleCount(3);
+
+        // Enchaînement: FadeIn + SlideDown → Pulse
+        SequentialTransition sequence = new SequentialTransition(
+                new ParallelTransition(fadeIn, slideDown), // Jouer en parallèle
+                pulse
+        );
+
+        sequence.play();
     }
     private void loadExistingPlayers() {
         try {

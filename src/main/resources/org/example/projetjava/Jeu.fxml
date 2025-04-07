@@ -2,23 +2,36 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.JeuController">
+
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.JeuController">
    <children>
-      <Label fx:id="readyText" text="COMMENCER" textFill="WHITE">
-         <font>
-            <Font name="Swiss 721 Bold Condensed Outline BT" size="100.0" />
-         </font>
-         <effect>
-            <DropShadow spread="0.7">
-               <color>
-                  <Color red="0.4093792736530304" green="0.24176955223083496" blue="0.8333333134651184" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Label>
+      <ImageView fx:id="backgroundImage" fitHeight="400.0" fitWidth="600.0">
+         <image>
+            <Image url="@background.jpg" />
+         </image>
+      </ImageView>
+      <StackPane fx:id="transitionPane" layoutY="118.0" prefHeight="139.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="readyText" prefHeight="238.0" prefWidth="500.0" text="COMMENCER" textFill="WHITE" StackPane.alignment="CENTER">
+               <font>
+                  <Font name="ArtifaktElement-Heavy" size="80.0" />
+               </font>
+               <effect>
+                  <DropShadow spread="0.43">
+                     <color>
+                        <Color red="0.6384566426277161" green="0.5099999904632568" blue="1.0" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </Label>
+         </children>
+      </StackPane>
    </children>
-</StackPane>
+</AnchorPane>

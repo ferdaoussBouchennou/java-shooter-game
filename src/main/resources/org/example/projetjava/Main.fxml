@@ -9,10 +9,15 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="541.0" prefWidth="614.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.MainController">
@@ -41,10 +46,36 @@
          </effect>
       </ComboBox>
       <TextField fx:id="playerNameField" layoutX="341.0" layoutY="99.0" promptText="Entrez votre nom" />
-      <Label layoutX="91.0" layoutY="23.0" text="Bienvenue dans le jeu " textFill="#cfaafa">
+      <Label fx:id="welcomeLabel" layoutX="71.0" layoutY="21.0" prefHeight="55.0" prefWidth="509.0" text="Bienvenue dans le jeu " wrapText="true">
          <font>
-            <Font name="Copperplate Gothic Bold" size="35.0" />
+            <Font name="Snap ITC" size="38.0" />
          </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0" startX="0.13249213161528675">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color red="0.5701321363449097" green="0.405024915933609" blue="0.7719298005104065" />
+                     </color>
+                  </Stop>
+                  <Stop offset="0.006711409395973154">
+                     <color>
+                        <Color red="0.7295429706573486" green="0.5800303220748901" blue="0.9122806787490845" />
+                     </color>
+                  </Stop>
+                  <Stop offset="0.5324384787472035">
+                     <color>
+                        <Color red="0.8199999928474426" green="0.7363452315330505" blue="0.4018000066280365" />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="1.0" green="1.0" blue="0.8395061492919922" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </textFill>
       </Label>
       <Label layoutX="67.0" layoutY="153.0" text="Niveau :" textFill="WHITE">
          <font>
@@ -79,6 +110,20 @@
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
+         <effect>
+            <InnerShadow>
+               <color>
+                  <Color red="1.0" green="1.0" blue="1.0" />
+               </color>
+               <input>
+                  <Lighting>
+                     <bumpInput>
+                        <Shadow />
+                     </bumpInput>
+                  </Lighting>
+               </input>
+            </InnerShadow>
+         </effect>
       </Label>
       <ImageView fx:id="image1" fitWidth="100.0" layoutX="34.0" layoutY="245.0">
          <image>
@@ -168,7 +213,7 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <ImageView fitHeight="75.0" fitWidth="92.0" layoutX="474.0" layoutY="245.0">
+      <ImageView fitHeight="75.0" fitWidth="92.0" layoutX="478.0" layoutY="245.0">
          <image>
             <Image url="@kenney_space-shooter-redux/PNG/Enemies/enemyRed3.png" />
          </image>
