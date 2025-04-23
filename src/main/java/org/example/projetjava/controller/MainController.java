@@ -1,6 +1,10 @@
-package org.example.projetjava;
+package org.example.projetjava.controller;
 
 import javafx.animation.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,10 +14,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.projetjava.manager.AvionManager;
+import org.example.projetjava.model.Avion;
+import org.example.projetjava.model.ConnexionBD;
+import org.example.projetjava.model.Joueur;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Optional;
 
 public class MainController {
     // Éléments FXML
@@ -31,7 +38,7 @@ public class MainController {
     @FXML
     public void initialize() {
         animateWelcomeTitle();
-        loadExistingPlayers(); // Charger les joueurs existants au démarrage
+        loadExistingPlayers();
         setupPlayerSelection();
         setupNiveauSelection();
         setupAvionSelection();
@@ -39,11 +46,9 @@ public class MainController {
         setupButtonActions();
     }
     private void animateWelcomeTitle() {
-        // Réinitialiser la position et l'opacité (au cas où)
         welcomeLabel.setOpacity(0);
         welcomeLabel.setTranslateY(-20);
 
-        // 1. FadeIn + SlideDown
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.01), welcomeLabel);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
@@ -51,8 +56,6 @@ public class MainController {
         TranslateTransition slideDown = new TranslateTransition(Duration.seconds(1.5), welcomeLabel);
         slideDown.setFromY(-20);
         slideDown.setToY(0);
-
-        // 2. Pulse (zoom léger répété)
         ScaleTransition pulse = new ScaleTransition(Duration.seconds(0.5), welcomeLabel);
         pulse.setFromX(1);
         pulse.setFromY(1);
@@ -60,10 +63,8 @@ public class MainController {
         pulse.setToY(1.1);
         pulse.setAutoReverse(true);
         pulse.setCycleCount(3);
-
-        // Enchaînement: FadeIn + SlideDown → Pulse
         SequentialTransition sequence = new SequentialTransition(
-                new ParallelTransition(fadeIn, slideDown), // Jouer en parallèle
+                new ParallelTransition(fadeIn, slideDown),
                 pulse
         );
 
@@ -71,34 +72,32 @@ public class MainController {
     }
     private void loadExistingPlayers() {
         try {
-            // Charger depuis la base de données
             playerComboBox.getItems().clear();
             playerComboBox.getItems().add("Nouveau joueur");
             playerComboBox.getItems().add("DefaultPlayer");
 
-            // Ajouter les joueurs existants depuis la BD
-            ConnexionBD.getJoueursExistants().forEach(joueur -> {
+            for (String joueur : ConnexionBD.getJoueursExistants()) {
                 if (!playerComboBox.getItems().contains(joueur)) {
                     playerComboBox.getItems().add(joueur);
                 }
-            });
-
+            }
         } catch (SQLException e) {
             showAlert("Erreur BD", "Impossible de charger les joueurs");
         }
     }
-
     private void setupPlayerSelection() {
-        playerComboBox.setOnAction(event -> {
-            String selected = playerComboBox.getValue();
-            boolean isNewPlayer = "Nouveau joueur".equals(selected);
+        playerComboBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String selected = playerComboBox.getValue();
+                boolean isNewPlayer = "Nouveau joueur".equals(selected);
 
-            playerNameField.setDisable(!isNewPlayer);
+                playerNameField.setDisable(!isNewPlayer);
 
-            if (!isNewPlayer) {
-                playerNameField.clear();
-                // Charger les préférences du joueur existant
-                loadPlayerPreferences(selected);
+                if (!isNewPlayer) {
+                    playerNameField.clear();
+                    loadPlayerPreferences(selected);
+                }
             }
         });
     }
@@ -106,25 +105,21 @@ public class MainController {
         try {
             Joueur joueur = ConnexionBD.getJoueur(playerName);
             if (joueur != null) {
-                // Mettre à jour la sélection du niveau
-                niveauGroup.getToggles().forEach(toggle -> {
+                for (javafx.scene.control.Toggle toggle : niveauGroup.getToggles()) {
                     if (((RadioButton)toggle).getText().equals(joueur.getNiveau())) {
                         niveauGroup.selectToggle(toggle);
                     }
-                });
-
-                // Mettre à jour la sélection de l'avion
-                avionGroup.getToggles().forEach(toggle -> {
+                }
+                for (javafx.scene.control.Toggle toggle : avionGroup.getToggles()) {
                     if (((RadioButton)toggle).getText().equals(joueur.getAvion())) {
                         avionGroup.selectToggle(toggle);
                     }
-                });
+                }
             }
         } catch (SQLException e) {
             System.err.println("Erreur de chargement des préférences: " + e.getMessage());
         }
     }
-
     private void setupNiveauSelection() {
         niveauGroup = new ToggleGroup();
         niveauDebutant.setToggleGroup(niveauGroup);
@@ -132,7 +127,6 @@ public class MainController {
         niveauHaut.setToggleGroup(niveauGroup);
         niveauGroup.selectToggle(niveauDebutant);
     }
-
     private void setupAvionSelection() {
         avionGroup = new ToggleGroup();
         button1.setToggleGroup(avionGroup);
@@ -140,27 +134,27 @@ public class MainController {
         button3.setToggleGroup(avionGroup);
         button4.setToggleGroup(avionGroup);
 
-        avionGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                updateAvionStats(((RadioButton)newVal).getId());
+        avionGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> obs, Toggle oldVal, Toggle newVal) {
+                if (newVal != null) {
+                    updateAvionStats(((RadioButton)newVal).getId());
+                }
             }
         });
     }
-
     private void loadAvionImages() {
-        // Charger les images correspondantes
         image1.setImage(loadImage("playerShip1_blue.png"));
         image2.setImage(loadImage("playerShip2_orange.png"));
         image3.setImage(loadImage("playerShip3_green.png"));
         image4.setImage(loadImage("enemyRed3.png"));
 
         // Associer chaque RadioButton à un ID d'avion
-        button1.setId("MIC-51S");
+        button1.setId("MiG-51S");
         button2.setId("FIA-28A");
         button3.setId("X-Wing");
         button4.setId("DarkStar");
     }
-
     private Image loadImage(String filename) {
         try {
             return new Image(getClass().getResourceAsStream(
@@ -172,24 +166,30 @@ public class MainController {
     }
 
     private void setupButtonActions() {
-        start.setOnAction(event -> handleStart());
-        quit.setOnAction(event -> System.exit(0));
+        start.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                handleStart();
+            }
+        });
+        quit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.exit(0);
+            }
+        });
     }
 
     private void updateAvionStats(String avionId) {
-        try {
-            Avion avion = ConnexionBD.getAvion(avionId);
-            if (avion != null) {
-                prog1.setProgress(avion.getVitesse() / 10.0);
-                prog2.setProgress(avion.getPuissanceTir() / 5.0);
-                prog3.setProgress(avion.getPointsVie() / 100.0);
+        Avion avion = AvionManager.getAvion(avionId);
+        if (avion != null) {
+            prog1.setProgress(avion.getVitesse() / 10.0);
+            prog2.setProgress(avion.getPuissanceTir() / 5.0);
+            prog3.setProgress(avion.getPointsVie() / 10.0);
 
-                vitesseLabel.setText("Vitesse: " + avion.getVitesse());
-                puissanceLabel.setText("Puissance: " + avion.getPuissanceTir());
-                vieLabel.setText("Vie: " + avion.getPointsVie());
-            }
-        } catch (SQLException e) {
-            showAlert("Erreur BD", "Impossible de charger les stats de l'avion");
+            vitesseLabel.setText("Vitesse: " + avion.getVitesse());
+            puissanceLabel.setText("Puissance: " + avion.getPuissanceTir());
+            vieLabel.setText("Vie: " + avion.getPointsVie());
         }
     }
 
@@ -202,28 +202,15 @@ public class MainController {
 
             // Enregistrement en base si nouveau joueur
             if ("Nouveau joueur".equals(playerComboBox.getValue())) {
-                ConnexionBD.enregistrerJoueur(nomJoueur, niveau, avion);
+                ConnexionBD.enregistrerJoueur(nomJoueur, niveau, avion, 0);
                 playerComboBox.getItems().add(nomJoueur);
             }
-
-            // Lancer la transition au lieu du jeu directement
             launchTransition(nomJoueur, niveau, avion);
 
         } catch (Exception e) {
             showAlert("Erreur", e.getMessage());
         }
     }
-
-    private boolean confirmUpdatePlayer(String playerName) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Joueur existant");
-        alert.setContentText("Voulez-vous mettre à jour les préférences pour " + playerName + "?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.isPresent() && result.get() == ButtonType.OK;
-    }
-
     private String validatePlayerName() throws Exception {
         if ("Nouveau joueur".equals(playerComboBox.getValue())) {
             String nom = playerNameField.getText().trim();
@@ -233,7 +220,6 @@ public class MainController {
         }
         return playerComboBox.getValue();
     }
-
     private String getSelectedNiveau() throws Exception {
         if (niveauGroup.getSelectedToggle() == null) {
             throw new Exception("Veuillez sélectionner un niveau");
@@ -257,21 +243,16 @@ public class MainController {
     }
     private void launchTransition(String playerName, String niveau, String avion) {
         try {
-            // 1. Charger le FXML de transition
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/projetjava/Jeu.fxml"));
             Parent root = loader.load();
 
-            // 2. Initialiser le contrôleur de transition
-            JeuController transitionController = loader.getController();
-            transitionController.showTransition(playerName);
+            JeuController jeuController = loader.getController();
+            jeuController.initializeGame(playerName, niveau, avion);
 
-            // 3. Afficher la scène de transition
             Stage stage = (Stage) start.getScene().getWindow();
             stage.setScene(new Scene(root, 800, 600));
             stage.show();
-
         } catch (IOException e) {
-            showAlert("Erreur", "Impossible de charger l'écran de transition");
             e.printStackTrace();
         }
     }

@@ -9,15 +9,14 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.JeuController">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handleKeyPressed" onKeyReleased="#handleKeyReleased" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.controller.JeuController">
    <children>
       <ImageView fx:id="backgroundImage" fitHeight="400.0" fitWidth="600.0">
          <image>
             <Image url="@background.jpg" />
          </image>
       </ImageView>
-      <StackPane fx:id="transitionPane" layoutY="118.0" prefHeight="139.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StackPane fx:id="transitionPane" layoutX="134.0" layoutY="69.33333333333333" prefHeight="331.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label fx:id="readyText" prefHeight="238.0" prefWidth="500.0" text="COMMENCER" textFill="WHITE" StackPane.alignment="CENTER">
                <font>
