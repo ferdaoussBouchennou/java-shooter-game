@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.controller.MultiplayerController">
+    <ImageView fitHeight="600.0" fitWidth="800.0">
+        <image>
+            <Image url="@background.jpg" />
+        </image>
+    </ImageView>
+
+    <Label layoutX="250.0" layoutY="50.0" text="Multijoueur" style="-fx-font-size: 36; -fx-text-fill: white;"/>
+
+    <VBox layoutX="300.0" layoutY="150.0" spacing="10.0">
+        <Label text="Nom du joueur:" style="-fx-text-fill: white;"/>
+        <TextField fx:id="playerNameField" promptText="Votre nom"/>
+
+        <Label text="Adresse du serveur:" style="-fx-text-fill: white;"/>
+        <TextField fx:id="serverAddressField" promptText="localhost"/>
+
+        <Label text="Avion:" style="-fx-text-fill: white;"/>
+        <ComboBox fx:id="avionComboBox"/>
+
+        <Button fx:id="connectButton" text="Se connecter" onAction="#handleConnect"/>
+    </VBox>
+</AnchorPane>

@@ -20,7 +20,7 @@
             <Image url="@backMenu.jpg" />
          </image>
       </ImageView>
-      <Button fx:id="local" layoutX="231.0" layoutY="242.0" mnemonicParsing="false" onAction="#handleSinglePlayer" prefHeight="63.0" prefWidth="197.0" text="  Monojoueur">
+      <Button fx:id="local" layoutX="231.0" layoutY="242.0" mnemonicParsing="false" onAction="#handleSinglePlayer" prefHeight="63.0" prefWidth="197.0" text="   Monojoueur">
          <font>
             <Font name="Pristina" size="27.0" />
          </font>
@@ -34,7 +34,7 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
-      <Button fx:id="multi" layoutX="231.0" layoutY="342.0" mnemonicParsing="false" onAction="#handleMultiplayer" prefHeight="60.0" prefWidth="197.0" text="  Multijoueur">
+      <Button fx:id="multi" layoutX="231.0" layoutY="342.0" mnemonicParsing="false" onAction="#handleMultiplayer" prefHeight="60.0" prefWidth="197.0" text="   Multijoueur">
          <font>
             <Font name="Pristina" size="27.0" />
          </font>
