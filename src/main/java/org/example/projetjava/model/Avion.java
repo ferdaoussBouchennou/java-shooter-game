@@ -1,4 +1,4 @@
-package org.example.projetjava;
+package org.example.projetjava.model;
 
 public class Avion {
     private final String nom;
@@ -15,8 +15,6 @@ public class Avion {
         this.pointsVie = pointsVie;
         this.imagePath = imagePath;
     }
-
-    // Getters
     public String getNom() {
         return nom;
     }
@@ -37,25 +35,4 @@ public class Avion {
         return imagePath;
     }
 
-    // Méthode pour afficher les caractéristiques (utile pour le débogage)
-    @Override
-    public String toString() {
-        return String.format(
-                "Avion [nom=%s, vitesse=%d, puissanceTir=%d, pointsVie=%d, imagePath=%s]",
-                nom, vitesse, puissanceTir, pointsVie, imagePath
-        );
-    }
-
-    // Méthode pour obtenir les caractéristiques sous forme normalisée (0-1)
-    public double getVitesseNormalisee() {
-        return vitesse / 10.0;
-    }
-
-    public double getPuissanceNormalisee() {
-        return puissanceTir / 5.0;
-    }
-
-    public double getVieNormalisee() {
-        return pointsVie / 100.0;
-    }
 }

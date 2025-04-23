@@ -14,4 +14,10 @@ module org.example.projetjava {
 
     opens org.example.projetjava to javafx.fxml;
     exports org.example.projetjava;
+    exports org.example.projetjava.controller;
+    opens org.example.projetjava.controller to javafx.fxml;
+    exports org.example.projetjava.model;
+    opens org.example.projetjava.model to javafx.fxml;
+    exports org.example.projetjava.manager;
+    opens org.example.projetjava.manager to javafx.fxml;
 }
