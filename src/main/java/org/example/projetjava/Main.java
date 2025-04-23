@@ -11,6 +11,7 @@ import java.io.IOException;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
+
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("Menu.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Image icon = new Image("C:\\TPs Java\\ProjetJava\\src\\main\\resources\\org\\example\\projetjava\\icon.jpg");
