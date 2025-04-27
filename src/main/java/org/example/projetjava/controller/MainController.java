@@ -147,7 +147,7 @@ public class MainController {
         image1.setImage(loadImage("playerShip1_blue.png"));
         image2.setImage(loadImage("playerShip2_orange.png"));
         image3.setImage(loadImage("playerShip3_green.png"));
-        image4.setImage(loadImage("enemyRed3.png"));
+        image4.setImage(loadImage("playerShip2_red.png"));
 
         // Associer chaque RadioButton à un ID d'avion
         button1.setId("MiG-51S");
