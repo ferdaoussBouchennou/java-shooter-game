@@ -4,119 +4,76 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane prefHeight="522.0" prefWidth="660.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.controller.MenuController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.controller.MenuController">
    <children>
-      <ImageView fitHeight="522.0" fitWidth="660.0">
+      <!-- Fond d'écran -->
+      <ImageView fitHeight="600.0" fitWidth="800.0">
          <image>
             <Image url="@backMenu.jpg" />
          </image>
-      </ImageView>
-      <Button fx:id="local" layoutX="231.0" layoutY="242.0" mnemonicParsing="false" onAction="#handleSinglePlayer" prefHeight="63.0" prefWidth="197.0" text="   Monojoueur">
-         <font>
-            <Font name="Pristina" size="27.0" />
-         </font>
          <effect>
-            <InnerShadow choke="0.6" height="85.66" radius="42.3275" width="85.65">
-               <color>
-                  <Color red="0.9473684430122375" green="0.7849902510643005" blue="0.5994151830673218" />
-               </color>
-            </InnerShadow>
+            <Glow level="0.3" />
          </effect>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-      <Button fx:id="multi" layoutX="231.0" layoutY="342.0" mnemonicParsing="false" onAction="#handleMultiplayer" prefHeight="60.0" prefWidth="197.0" text="   Multijoueur">
-         <font>
-            <Font name="Pristina" size="27.0" />
-         </font>
-         <effect>
-            <InnerShadow choke="0.6" height="85.66" radius="42.3275" width="85.65">
-               <color>
-                  <Color red="1.0" green="0.7195473313331604" blue="0.4197530746459961" opacity="0.6200000047683716" />
-               </color>
-            </InnerShadow>
-         </effect>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-      <Label layoutX="118.0" layoutY="86.0" prefWidth="423.0" text="Choisis Ton Mode">
-         <font>
-            <Font name="Snap ITC" size="40.0" />
-         </font>
-         <textFill>
-            <LinearGradient endX="0.3249211115791971" endY="1.0" startX="0.33123027037370845" startY="0.11356466876971609">
-               <stops>
-                  <Stop>
+      </ImageView>
+
+      <!-- En-tête avec titre -->
+      <AnchorPane prefHeight="120.0" prefWidth="800.0" style="-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 0 0 20 20;">
+         <children>
+            <Label layoutX="200.0" layoutY="30.0" text="Choisis Ton Mode">
+               <font>
+                  <Font name="Snap ITC" size="40.0" />
+               </font>
+               <textFill>
+                  <LinearGradient endX="0.3249211115791971" endY="1.0" startX="0.33123027037370845" startY="0.11356466876971609">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="0.9736841917037964" green="0.786159873008728" blue="0.5409356951713562" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.1498881431767338">
+                           <color>
+                              <Color red="0.9736841917037964" green="0.786159873008728" blue="0.5409356951713562" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.36017897091722595">
+                           <color>
+                              <Color red="1.0" green="0.7808641791343689" blue="0.7808641791343689" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="0.7808641791343689" blue="0.7808641791343689" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </textFill>
+               <effect>
+                  <DropShadow spread="0.2">
                      <color>
-                        <Color red="0.9736841917037964" green="0.786159873008728" blue="0.5409356951713562" />
+                        <Color red="0.5526315569877625" green="0.452850878238678" blue="0.09210526198148727" />
                      </color>
-                  </Stop>
-                  <Stop offset="0.1498881431767338">
-                     <color>
-                        <Color red="0.9736841917037964" green="0.786159873008728" blue="0.5409356951713562" />
-                     </color>
-                  </Stop>
-                  <Stop offset="0.36017897091722595">
-                     <color>
-                        <Color red="1.0" green="0.7808641791343689" blue="0.7808641791343689" />
-                     </color>
-                  </Stop>
-                  <Stop offset="1.0">
-                     <color>
-                        <Color red="1.0" green="0.7808641791343689" blue="0.7808641791343689" />
-                     </color>
-                  </Stop>
-               </stops>
-            </LinearGradient>
-         </textFill>
-         <effect>
-            <DropShadow spread="0.2">
-               <color>
-                  <Color red="0.5526315569877625" green="0.452850878238678" blue="0.09210526198148727" />
-               </color>
-            </DropShadow>
-         </effect>
-      </Label>
-      <ImageView fitHeight="37.0" fitWidth="38.0" layoutX="242.0" layoutY="355.0">
-         <image>
-            <Image url="@team.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="37.0" fitWidth="38.0" layoutX="242.0" layoutY="255.0">
-         <image>
-            <Image url="@player.png" />
-         </image>
-      </ImageView>
-      <ImageView layoutX="55.0" layoutY="14.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife2_blue.png" />
-         </image>
-      </ImageView>
-      <ImageView layoutX="14.0" layoutY="14.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife3_red.png" />
-         </image>
-      </ImageView>
-      <ImageView layoutX="147.0" layoutY="14.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife3_green.png" />
-         </image>
-      </ImageView>
-      <ImageView layoutX="104.0" layoutY="14.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife1_orange.png" />
-         </image>
-      </ImageView>
-      <Label layoutX="205.0" layoutY="138.0" text="de Bataille">
+                  </DropShadow>
+               </effect>
+            </Label>
+         </children>
+      </AnchorPane>
+
+      <Label layoutX="255.0" layoutY="90.0" text="de Bataille">
          <font>
             <Font name="Snap ITC" size="40.0" />
          </font>
@@ -154,5 +111,113 @@
             </DropShadow>
          </effect>
       </Label>
+
+      <!-- Icônes dans la barre supérieure -->
+      <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="14.0" spacing="10.0">
+         <children>
+            <ImageView>
+               <image>
+                  <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife3_red.png" />
+               </image>
+            </ImageView>
+            <ImageView>
+               <image>
+                  <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife2_blue.png" />
+               </image>
+            </ImageView>
+            <ImageView>
+               <image>
+                  <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife1_orange.png" />
+               </image>
+            </ImageView>
+            <ImageView>
+               <image>
+                  <Image url="@kenney_space-shooter-redux/PNG/UI/playerLife3_green.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+
+      <!-- Contenu principal avec boutons -->
+      <VBox alignment="CENTER" layoutY="200.0" prefHeight="300.0" prefWidth="800.0" spacing="40.0">
+         <children>
+            <!-- Bouton Mode Monojoueur -->
+            <Button fx:id="local" mnemonicParsing="false" onAction="#handleSinglePlayer" prefHeight="70.0" prefWidth="300.0" style="-fx-background-color: linear-gradient(to bottom, #ffcc66, #cc6600); -fx-background-radius: 15;">
+               <graphic>
+                  <HBox alignment="CENTER" spacing="15.0">
+                     <children>
+                        <ImageView fitHeight="40.0" fitWidth="40.0">
+                           <image>
+                              <Image url="@player.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Monojoueur" textFill="WHITE">
+                           <font>
+                              <Font name="Pristina" size="32.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </graphic>
+               <effect>
+                  <InnerShadow choke="0.6" height="85.66" radius="42.3275" width="85.65">
+                     <color>
+                        <Color red="0.9473684430122375" green="0.7849902510643005" blue="0.5994151830673218" />
+                     </color>
+                  </InnerShadow>
+               </effect>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+
+            <!-- Bouton Mode Multijoueur -->
+            <Button fx:id="multi" mnemonicParsing="false" onAction="#handleMultiplayer" prefHeight="70.0" prefWidth="300.0" style="-fx-background-color: linear-gradient(to bottom, #ff9966, #cc6600); -fx-background-radius: 15;">
+               <graphic>
+                  <HBox alignment="CENTER" spacing="15.0">
+                     <children>
+                        <ImageView fitHeight="40.0" fitWidth="40.0">
+                           <image>
+                              <Image url="@team.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Multijoueur" textFill="WHITE">
+                           <font>
+                              <Font name="Pristina" size="32.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </graphic>
+               <effect>
+                  <InnerShadow choke="0.6" height="85.66" radius="42.3275" width="85.65">
+                     <color>
+                        <Color red="1.0" green="0.7195473313331604" blue="0.4197530746459961" opacity="0.6200000047683716" />
+                     </color>
+                  </InnerShadow>
+               </effect>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+
+            <!-- Bouton Quitter -->
+            <Button fx:id="exit" mnemonicParsing="false" onAction="#handleExit" prefHeight="60.0" prefWidth="200.0" style="-fx-background-color: linear-gradient(to bottom, #ff6666, #cc0000); -fx-background-radius: 10;" text="QUITTER" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+               <effect>
+                  <DropShadow height="20.0" radius="9.5" width="20.0">
+                     <color>
+                        <Color red="0.5" green="0.0" blue="0.0" opacity="0.8" />
+                     </color>
+                  </DropShadow>
+               </effect>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

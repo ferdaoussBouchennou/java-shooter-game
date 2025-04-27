@@ -1,25 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.controller.MultiplayerGameController">
-    <ImageView fitHeight="600.0" fitWidth="800.0">
-        <image>
-            <Image url="@background.jpg" />
-        </image>
-    </ImageView>
+<AnchorPane fx:id="rootPane" onKeyPressed="#handleKeyPressed" onKeyReleased="#handleKeyReleased"
+            focusTraversable="true"
+            maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.projetjava.controller.MultiplayerGameController">
+    <children>
+        <!-- Fond d'écran du jeu -->
+        <ImageView fitHeight="600.0" fitWidth="800.0">
+            <image>
+                <Image url="@background.jpg" />
+            </image>
+            <effect>
+                <Glow level="0.2" />
+            </effect>
+        </ImageView>
 
-    <HBox spacing="10.0" layoutX="10.0" layoutY="10.0">
-        <VBox spacing="5.0">
-            <Label fx:id="scoreLabel" style="-fx-text-fill: white;"/>
-            <Label fx:id="vieLabel" style="-fx-text-fill: white;"/>
+        <!-- Panneau d'information du joueur (gauche) -->
+        <VBox alignment="TOP_LEFT" layoutX="10" layoutY="10" prefWidth="200" spacing="5"
+              style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 10; -fx-padding: 8;">
+            <effect>
+                <DropShadow height="10.0" radius="4.5" spread="0.1" width="10.0">
+                    <color>
+                        <Color opacity="0.5" />
+                    </color>
+                </DropShadow>
+            </effect>
+            <children>
+                <Label text="VOTRE VAISSEAU" textFill="#00e5ff">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                    <effect>
+                        <Glow level="0.3" />
+                    </effect>
+                </Label>
+                <Label fx:id="scoreLabel" style="-fx-font-size: 16px; -fx-text-fill: #ffcc00;">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+                <Label fx:id="vieLabel" style="-fx-font-size: 16px; -fx-text-fill: #00ff44;">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+            </children>
         </VBox>
 
-        <VBox spacing="5.0" layoutX="600.0">
-            <Label fx:id="enemyScoreLabel" style="-fx-text-fill: white;"/>
-            <Label fx:id="enemyVieLabel" style="-fx-text-fill: white;"/>
+        <!-- Panneau d'information de l'adversaire (droite) -->
+        <VBox alignment="TOP_RIGHT" layoutX="590" layoutY="10" prefWidth="200" spacing="5"
+              style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 10; -fx-padding: 8;">
+            <effect>
+                <DropShadow height="10.0" radius="4.5" spread="0.1" width="10.0">
+                    <color>
+                        <Color opacity="0.5" />
+                    </color>
+                </DropShadow>
+            </effect>
+            <children>
+                <Label text="ADVERSAIRE" textFill="#ff80ab" textAlignment="RIGHT">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                    <effect>
+                        <Glow level="0.3" />
+                    </effect>
+                </Label>
+                <Label fx:id="otherPlayerScoreLabel" style="-fx-font-size: 16px; -fx-text-fill: #ffcc00;" textAlignment="RIGHT">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+                <Label fx:id="otherPlayerVieLabel" style="-fx-font-size: 16px; -fx-text-fill: #00ff44;" textAlignment="RIGHT">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+            </children>
         </VBox>
-    </HBox>
+
+        <!-- Panneau des contrôles (bas de l'écran) -->
+        <HBox alignment="CENTER" layoutY="540.0" prefHeight="50.0" prefWidth="800.0"
+              style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 10 10 0 0;">
+            <children>
+                <Label text="CONTRÔLES: ← → pour se déplacer, ESPACE pour tirer" textFill="white">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+    </children>
 </AnchorPane>

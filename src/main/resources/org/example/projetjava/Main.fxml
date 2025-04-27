@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -8,211 +9,376 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.effect.InnerShadow?>
-<?import javafx.scene.effect.Lighting?>
-<?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="541.0" prefWidth="614.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.controller.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.projetjava.controller.MainController">
    <children>
-      <ImageView fitHeight="541.0" fitWidth="614.0">
+      <ImageView fitHeight="600.0" fitWidth="810.0" layoutX="-3.0">
          <image>
             <Image url="@kenney_space-shooter-redux/Backgrounds/purple.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="image4" fitHeight="549.0" fitWidth="626.0" pickOnBounds="true" preserveRatio="true" />
-      <Label layoutX="67.0" layoutY="102.0" text="Joueur :" textFill="WHITE">
+
+      <!-- En-tête avec titre -->
+      <AnchorPane prefHeight="112.0" prefWidth="800.0" style="-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 0 0 20 20;">
+         <children>
+            <Label fx:id="welcomeLabel" layoutX="174.0" layoutY="20.0" prefHeight="60.0" prefWidth="487.0" text="Bienvenue dans le jeu " textAlignment="CENTER">
+               <font>
+                  <Font name="Snap ITC" size="38.0" />
+               </font>
+               <textFill>
+                  <LinearGradient endX="1.0" endY="1.0" startX="0.13249213161528675">
+                     <stops>
+                        <Stop>
+                           <color>
+                              <Color red="0.5701321363449097" green="0.405024915933609" blue="0.7719298005104065" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.006711409395973154">
+                           <color>
+                              <Color red="0.7295429706573486" green="0.5800303220748901" blue="0.9122806787490845" />
+                           </color>
+                        </Stop>
+                        <Stop offset="0.5324384787472035">
+                           <color>
+                              <Color red="0.8199999928474426" green="0.7363452315330505" blue="0.4018000066280365" />
+                           </color>
+                        </Stop>
+                        <Stop offset="1.0">
+                           <color>
+                              <Color red="1.0" green="1.0" blue="0.8395061492919922" />
+                           </color>
+                        </Stop>
+                     </stops>
+                  </LinearGradient>
+               </textFill>
+               <effect>
+                  <DropShadow spread="0.2">
+                     <color>
+                        <Color red="0.5526315569877625" green="0.452850878238678" blue="0.09210526198148727" />
+                     </color>
+                  </DropShadow>
+               </effect>
+            </Label>
+         </children>
+      </AnchorPane>
+
+      <!-- Section profil joueur -->
+      <VBox alignment="TOP_CENTER" layoutY="140.0" prefWidth="800.0" spacing="10.0">
+         <padding>
+            <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+         </padding>
+         <children>
+            <HBox alignment="CENTER" layoutY="50.0" prefWidth="720.0" spacing="20.0" style="-fx-background-color: rgba(20,20,50,0.8); -fx-background-radius: 15;">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+               <effect>
+                  <DropShadow height="40.0" radius="19.5" width="40.0">
+                     <color>
+                        <Color red="0.0" green="0.0" blue="0.3" opacity="0.5" />
+                     </color>
+                  </DropShadow>
+               </effect>
+               <children>
+                  <Label text="Joueur :" textFill="#00e5ff">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <effect>
+                        <Glow level="0.3" />
+                     </effect>
+                  </Label>
+                  <ComboBox fx:id="playerComboBox" onAction="#initialize" prefHeight="30.0" prefWidth="180.0" style="-fx-background-color: rgba(255,255,255,0.9); -fx-background-radius: 5;">
+                     <effect>
+                        <InnerShadow>
+                           <color>
+                              <Color red="0.34822937846183777" green="0.16544833779335022" blue="0.8508771657943726" />
+                           </color>
+                        </InnerShadow>
+                     </effect>
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </ComboBox>
+                  <TextField fx:id="playerNameField" disable="true" prefHeight="30.0" prefWidth="200.0" promptText="Entrez votre nom" style="-fx-background-color: rgba(255,255,255,0.9); -fx-background-radius: 5;" />
+               </children>
+            </HBox>
+
+            <!-- Section niveau de difficulté -->
+            <HBox alignment="CENTER" spacing="20.0" style="-fx-background-color: rgba(50,20,50,0.8); -fx-background-radius: 15;">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+               <effect>
+                  <DropShadow height="40.0" radius="19.5" width="40.0">
+                     <color>
+                        <Color red="0.3" green="0.0" blue="0.3" opacity="0.5" />
+                     </color>
+                  </DropShadow>
+               </effect>
+               <children>
+                  <Label text="Niveau :" textFill="#ff80ab">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <effect>
+                        <Glow level="0.3" />
+                     </effect>
+                  </Label>
+                  <RadioButton fx:id="niveauDebutant" mnemonicParsing="false" text="Débutant" textFill="WHITE">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="niveauGroup" />
+                     </toggleGroup>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <HBox.margin>
+                        <Insets right="30.0" />
+                     </HBox.margin>
+                  </RadioButton>
+                  <RadioButton fx:id="niveauIntermediaire" mnemonicParsing="false" text="Intermédiaire" textFill="WHITE" toggleGroup="$niveauGroup">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <HBox.margin>
+                        <Insets right="30.0" />
+                     </HBox.margin>
+                  </RadioButton>
+                  <RadioButton fx:id="niveauHaut" mnemonicParsing="false" text="Haut niveau" textFill="WHITE" toggleGroup="$niveauGroup">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </RadioButton>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+
+      <!-- Section de sélection d'avion -->
+      <VBox alignment="TOP_CENTER" layoutY="280.0" prefWidth="800.0" spacing="10.0">
+         <padding>
+            <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER" text="SÉLECTION DE L'AÉRONEF :" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <effect>
+                  <InnerShadow>
+                     <color>
+                        <Color red="1.0" green="1.0" blue="1.0" />
+                     </color>
+                     <input>
+                        <Glow level="0.3" />
+                     </input>
+                  </InnerShadow>
+               </effect>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+
+            <HBox alignment="CENTER" spacing="30.0">
+               <children>
+                  <VBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <ImageView fx:id="image1" fitWidth="100.0" preserveRatio="true">
+                           <image>
+                              <Image url="@kenney_space-shooter-redux/PNG/playerShip1_blue.png" />
+                           </image>
+                           <effect>
+                              <DropShadow color="#3282ff" spread="0.3" />
+                           </effect>
+                        </ImageView>
+                        <RadioButton fx:id="button1" mnemonicParsing="false" text="MiG-51S" textFill="WHITE">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="avionGroup" />
+                           </toggleGroup>
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </RadioButton>
+                     </children>
+                  </VBox>
+
+                  <VBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <ImageView fx:id="image2" fitWidth="100.0" preserveRatio="true">
+                           <image>
+                              <Image url="@kenney_space-shooter-redux/PNG/playerShip2_orange.png" />
+                           </image>
+                           <effect>
+                              <DropShadow color="#ff9b32" spread="0.3" />
+                           </effect>
+                        </ImageView>
+                        <RadioButton fx:id="button2" mnemonicParsing="false" text="FIA-28A" textFill="WHITE" toggleGroup="$avionGroup">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </RadioButton>
+                     </children>
+                  </VBox>
+
+                  <VBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <ImageView fx:id="image3" fitWidth="100.0" preserveRatio="true">
+                           <image>
+                              <Image url="@kenney_space-shooter-redux/PNG/playerShip3_green.png" />
+                           </image>
+                           <effect>
+                              <DropShadow color="#32ff6e" spread="0.3" />
+                           </effect>
+                        </ImageView>
+                        <RadioButton fx:id="button3" mnemonicParsing="false" text="X-Wing" textFill="WHITE" toggleGroup="$avionGroup">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </RadioButton>
+                     </children>
+                  </VBox>
+
+                  <VBox alignment="CENTER" prefHeight="94.0" prefWidth="127.0" spacing="10.0">
+                     <children>
+                        <ImageView fx:id="image4">
+                           <image>
+                              <Image url="@kenney_space-shooter-redux/PNG/playerShip2_red.png" />
+                           </image>
+                           <effect>
+                              <DropShadow spread="0.3">
+                                 <color>
+                                    <Color red="0.8070175647735596" green="0.04732510447502136" blue="0.04732510447502136" />
+                                 </color>
+                              </DropShadow>
+                           </effect>
+                        </ImageView>
+                        <RadioButton fx:id="button4" mnemonicParsing="false" text="DarkStar" textFill="WHITE" toggleGroup="$avionGroup">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </RadioButton>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+
+            <!-- Section statistiques des avions -->
+            <HBox alignment="CENTER" layoutY="20.0" spacing="40.0" style="-fx-background-color: rgba(30,30,70,0.7); -fx-background-radius: 15;">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+               <effect>
+                  <DropShadow height="20.0" radius="9.5" width="20.0">
+                     <color>
+                        <Color red="0.0" green="0.0" blue="0.5" opacity="0.5" />
+                     </color>
+                  </DropShadow>
+               </effect>
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
+               <children>
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Label fx:id="vitesseLabel" text="Vitesse" textFill="#00e5ff">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <ProgressBar fx:id="prog1" prefHeight="20.0" prefWidth="180.0" progress="0.0" style="-fx-accent: #32cdff;" />
+                     </children>
+                  </VBox>
+
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Label fx:id="puissanceLabel" text="Projectile" textFill="#ffcc00">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <ProgressBar fx:id="prog2" prefHeight="20.0" prefWidth="180.0" progress="0.0" style="-fx-accent: #ffcc00;" />
+                     </children>
+                  </VBox>
+
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Label fx:id="vieLabel" text="Vie" textFill="#ff5252">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <ProgressBar fx:id="prog3" prefHeight="20.0" prefWidth="180.0" progress="0.0" style="-fx-accent: #ff5252;" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+
+      <!-- Panneau des boutons -->
+      <HBox alignment="CENTER" layoutY="530.0" prefHeight="60.0" prefWidth="800.0" spacing="40.0" />
+      <Button fx:id="start" layoutX="226.0" layoutY="563.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="144.0" style="-fx-background-color: linear-gradient(to bottom, #22cc33, #006600); -fx-background-radius: 10;" text="COMMENCER" textFill="WHITE">
          <font>
-            <Font size="14.0" />
+            <Font name="System Bold" size="16.0" />
          </font>
-      </Label>
-      <ComboBox fx:id="playerComboBox" layoutX="143.0" layoutY="99.0" onAction="#initialize" prefWidth="150.0">
          <effect>
-            <InnerShadow>
+            <DropShadow height="20.0" radius="9.5" width="20.0">
                <color>
-                  <Color red="0.34822937846183777" green="0.16544833779335022" blue="0.8508771657943726" />
+                  <Color red="0.0" green="0.5" blue="0.0" opacity="0.8" />
                </color>
-            </InnerShadow>
+            </DropShadow>
          </effect>
-      </ComboBox>
-      <TextField fx:id="playerNameField" layoutX="341.0" layoutY="99.0" promptText="Entrez votre nom" />
-      <Label fx:id="welcomeLabel" layoutX="71.0" layoutY="21.0" prefHeight="55.0" prefWidth="509.0" text="Bienvenue dans le jeu " wrapText="true">
-         <font>
-            <Font name="Snap ITC" size="38.0" />
-         </font>
-         <textFill>
-            <LinearGradient endX="1.0" endY="1.0" startX="0.13249213161528675">
-               <stops>
-                  <Stop>
-                     <color>
-                        <Color red="0.5701321363449097" green="0.405024915933609" blue="0.7719298005104065" />
-                     </color>
-                  </Stop>
-                  <Stop offset="0.006711409395973154">
-                     <color>
-                        <Color red="0.7295429706573486" green="0.5800303220748901" blue="0.9122806787490845" />
-                     </color>
-                  </Stop>
-                  <Stop offset="0.5324384787472035">
-                     <color>
-                        <Color red="0.8199999928474426" green="0.7363452315330505" blue="0.4018000066280365" />
-                     </color>
-                  </Stop>
-                  <Stop offset="1.0">
-                     <color>
-                        <Color red="1.0" green="1.0" blue="0.8395061492919922" />
-                     </color>
-                  </Stop>
-               </stops>
-            </LinearGradient>
-         </textFill>
-      </Label>
-      <Label layoutX="67.0" layoutY="153.0" text="Niveau :" textFill="WHITE">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <RadioButton fx:id="niveauDebutant" layoutX="143.0" layoutY="155.0" mnemonicParsing="false" text="Débutant" textFill="WHITE">
-         <toggleGroup>
-            <ToggleGroup fx:id="niveauGroup" />
-         </toggleGroup>
-         <font>
-            <Font size="13.0" />
-         </font>
          <cursor>
             <Cursor fx:constant="HAND" />
-         </cursor></RadioButton>
-      <RadioButton fx:id="niveauIntermediaire" layoutX="279.0" layoutY="154.0" mnemonicParsing="false" text="Intermédiaire" textFill="WHITE" toggleGroup="$niveauGroup">
-         <font>
-            <Font size="13.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></RadioButton>
-      <RadioButton fx:id="niveauHaut" layoutX="431.0" layoutY="154.0" mnemonicParsing="false" text="Haut niveau" textFill="WHITE" toggleGroup="$niveauGroup">
-         <font>
-            <Font size="13.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></RadioButton>
-      <Label layoutX="198.0" layoutY="198.0" text="Choisir un avion pour commencer :" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-         <effect>
-            <InnerShadow>
-               <color>
-                  <Color red="1.0" green="1.0" blue="1.0" />
-               </color>
-               <input>
-                  <Lighting>
-                     <bumpInput>
-                        <Shadow />
-                     </bumpInput>
-                  </Lighting>
-               </input>
-            </InnerShadow>
-         </effect>
-      </Label>
-      <ImageView fx:id="image1" fitWidth="100.0" layoutX="34.0" layoutY="245.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/playerShip1_blue.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="image2" fitWidth="100.0" layoutX="179.0" layoutY="245.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/playerShip2_orange.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="image3" fitWidth="100.0" layoutX="329.0" layoutY="245.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/playerShip3_green.png" />
-         </image>
-      </ImageView>
-      <RadioButton fx:id="button1" layoutX="40.0" layoutY="348.0" mnemonicParsing="false" text="MiG-51S" textFill="WHITE">
-         <toggleGroup>
-            <ToggleGroup fx:id="avionGroup" />
-         </toggleGroup>
-         <font>
-            <Font size="13.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></RadioButton>
-      <RadioButton fx:id="button2" layoutX="185.0" layoutY="348.0" mnemonicParsing="false" text="FIA-28A" textFill="WHITE" toggleGroup="$avionGroup">
-         <font>
-            <Font size="13.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></RadioButton>
-      <RadioButton fx:id="button3" layoutX="339.0" layoutY="348.0" mnemonicParsing="false" text="X-Wing" textFill="WHITE" toggleGroup="$avionGroup">
-         <font>
-            <Font size="13.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></RadioButton>
-      <RadioButton fx:id="button4" layoutX="480.0" layoutY="348.0" mnemonicParsing="false" text="DarkStar" textFill="WHITE" toggleGroup="$avionGroup">
-         <font>
-            <Font size="13.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></RadioButton>
-      <ProgressBar fx:id="prog1" layoutX="34.0" layoutY="394.0" prefHeight="18.0" prefWidth="133.0" progress="0.0" />
-      <ProgressBar fx:id="prog2" layoutX="237.0" layoutY="394.0" prefHeight="18.0" prefWidth="133.0" progress="0.0" />
-      <ProgressBar fx:id="prog3" layoutX="433.0" layoutY="394.0" prefHeight="18.0" prefWidth="133.0" progress="0.0" />
-      <Button fx:id="start" layoutX="393.0" layoutY="472.0" mnemonicParsing="false" text="Commencer">
-         <font>
-            <Font size="13.0" />
-         </font>
-         <effect>
-            <InnerShadow>
-               <color>
-                  <Color red="0.24320000410079956" green="0.7599999904632568" blue="0.35442668199539185" />
-               </color>
-            </InnerShadow>
-         </effect>
+         </cursor>
       </Button>
-      <Button fx:id="quit" layoutX="516.0" layoutY="472.0" mnemonicParsing="false" text="Quitter">
+      <Button fx:id="quit" layoutX="436.0" layoutY="563.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" style="-fx-background-color: linear-gradient(to bottom, #ff6666, #cc0000); -fx-background-radius: 10;" text="QUITTER" textFill="WHITE">
          <font>
-            <Font size="13.0" />
+            <Font name="System Bold" size="16.0" />
          </font>
          <effect>
-            <InnerShadow>
+            <DropShadow height="20.0" radius="9.5" width="20.0">
                <color>
-                  <Color red="0.8947368264198303" green="0.21816115081310272" blue="0.21816115081310272" />
+                  <Color red="0.5" green="0.0" blue="0.0" opacity="0.8" />
                </color>
-            </InnerShadow>
+            </DropShadow>
          </effect>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Button>
-      <Label fx:id="vitesseLabel" layoutX="70.0" layoutY="421.0" text="Vitesse" textFill="WHITE">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="puissanceLabel" layoutX="275.0" layoutY="421.0" text="Projectile" textFill="WHITE">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="vieLabel" layoutX="490.0" layoutY="421.0" text="Vie" textFill="WHITE">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <ImageView fitHeight="75.0" fitWidth="92.0" layoutX="478.0" layoutY="245.0">
-         <image>
-            <Image url="@kenney_space-shooter-redux/PNG/Enemies/enemyRed3.png" />
-         </image>
-      </ImageView>
    </children>
 </AnchorPane>
