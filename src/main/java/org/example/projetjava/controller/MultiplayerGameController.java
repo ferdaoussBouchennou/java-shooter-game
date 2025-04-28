@@ -55,6 +55,7 @@ public class MultiplayerGameController {
     private boolean otherPlayerShooting = false;
     private long otherPlayerLastShotTime = 0;
     private Avion otherPlayerAvionData; // Données de l'avion de l'autre joueur
+    private int nextEnemyId = 0;
 
     public void initializeGame(String playerName, GameClient client, boolean isHost, String avionChoisi) {
         this.playerName = playerName;
@@ -134,21 +135,40 @@ public class MultiplayerGameController {
             @Override
             public void onEnemyHit(GameClient.EnemyHitData data) {
                 Platform.runLater(() -> {
-                    // Gérer les ennemis touchés par l'autre joueur
-                    if (data.getPlayerId() != client.getClientId()) {
-                        otherPlayerScore = data.getPoints(); // Mettre à jour le score de l'autre joueur
-                        updateOtherPlayerDisplay();
+                    // Find the enemy by ID and remove it
+                    ImageView enemyToRemove = null;
 
-                        // Supprimer l'ennemi touché s'il existe encore
-                        int enemyId = data.getEnemyId();
-                        if (enemyId >= 0 && enemyId < ennemis.size()) {
-                            ImageView ennemi = ennemis.get(enemyId);
-                            rootPane.getChildren().remove(ennemi);
-                            ennemis.remove(enemyId);
+                    for (ImageView enemy : ennemis) {
+                        Integer enemyId = (Integer) enemy.getUserData();
+                        if (enemyId != null && enemyId == data.getEnemyId()) {
+                            enemyToRemove = enemy;
+                            break;
+                        }
+                    }
+
+                    if (enemyToRemove != null) {
+                        rootPane.getChildren().remove(enemyToRemove);
+                        ennemis.remove(enemyToRemove);
+
+                        // Update other player's score if it's from them
+                        if (data.getPlayerId() != client.getClientId()) {
+                            otherPlayerScore = data.getPoints();
+                            updateOtherPlayerDisplay();
                         }
                     }
                 });
             }
+
+            @Override
+            public void onEnemySpawn(GameClient.EnemySpawnData data) {
+                Platform.runLater(() -> {
+                    // Only create enemy if we didn't create it ourselves
+                    // (i.e., if we're not the host or if the message is from another client)
+                    if (!isHost || data.getPlayerId() != client.getClientId()) {
+                        createEnemy(data.getEnemyId(), data.getEnemyType(), data.getXPosition());
+                        System.out.println("Enemy spawned from network: ID=" + data.getEnemyId());
+                    }
+                });}
 
             @Override
             public void onGameStart() {
@@ -169,6 +189,7 @@ public class MultiplayerGameController {
                     }
                 });
             }
+
         });
     }
 
@@ -468,9 +489,9 @@ public class MultiplayerGameController {
 
     private void startEnemyGenerator() {
         gameExecutor.scheduleAtFixedRate(() -> {
-            if (gameRunning && ennemis.size() < 10) { // Limite d'ennemis
+            if (gameRunning && ennemis.size() < 10 && isHost) { // Only host generates enemies
                 Platform.runLater(() -> {
-                    if (Math.random() < 0.1) { // Taux d'apparition
+                    if (Math.random() < 0.1) { // Spawn rate
                         generateEnnemi();
                     }
                 });
@@ -484,22 +505,36 @@ public class MultiplayerGameController {
                 "enemyRed3.png", "enemyBlack3.png"
         };
 
-        String imagePath = "/org/example/projetjava/kenney_space-shooter-redux/PNG/Enemies/" +
-                enemyTypes[(int)(Math.random() * enemyTypes.length)];
+        String enemyType = enemyTypes[(int)(Math.random() * enemyTypes.length)];
+        String imagePath = "/org/example/projetjava/kenney_space-shooter-redux/PNG/Enemies/" + enemyType;
 
+        double margin = 40 * 0.5;
+        double xPos = margin + Math.random() * (rootPane.getWidth() - 40 - margin*2);
+
+        int enemyId = nextEnemyId++;
+
+        // Create enemy locally
+        createEnemy(enemyId, enemyType, xPos);
+
+        // Send to server
+        if (client != null) {
+            GameClient.EnemySpawnData spawnData = new GameClient.EnemySpawnData(enemyId, enemyType, xPos);
+            client.sendEnemySpawn(spawnData);
+        }
+    }
+    private void createEnemy(int enemyId, String enemyType, double xPos) {
         try {
+            String imagePath = "/org/example/projetjava/kenney_space-shooter-redux/PNG/Enemies/" + enemyType;
             ImageView ennemi = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
             ennemi.setFitWidth(40);
             ennemi.setFitHeight(40);
-
-            double margin = 40 * 0.5;
-            double xPos = margin + Math.random() * (rootPane.getWidth() - 40 - margin*2);
-
             ennemi.setLayoutX(xPos);
             ennemi.setLayoutY(-40);
+            ennemi.setUserData(enemyId); // Store ID for reference - critical for synchronization
 
             rootPane.getChildren().add(ennemi);
             ennemis.add(ennemi);
+            System.out.println("Enemy created with ID: " + enemyId);
         } catch (Exception e) {
             System.err.println("Erreur création ennemi: " + e.getMessage());
         }
@@ -565,10 +600,14 @@ public class MultiplayerGameController {
                     score += 10;
                     updateScoreDisplay();
 
-                    // Envoyer l'info au serveur
+                    // Get the actual enemy ID from its userData
+                    int enemyId = (Integer) ennemi.getUserData();
+
+                    // Send the info to the server
                     if (client != null) {
-                        client.sendEnemyHit(i, score);
+                        client.sendEnemyHit(enemyId, score);
                     }
+                    break; // A projectile can only hit one enemy
                 }
             }
         }

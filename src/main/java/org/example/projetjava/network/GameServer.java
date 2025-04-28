@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.example.projetjava.client.GameClient;
 import org.example.projetjava.model.GameState;
 import org.example.projetjava.model.PlayerState;
 
@@ -158,11 +159,19 @@ public class GameServer {
                     server.updatePlayerState(clientId, state);
                     break;
                 case ENEMY_HIT:
-                    // Transmettre le tir réussi à tous les clients
+                    // Add player ID to the hit data so receiver knows who hit it
+                    GameClient.EnemyHitData hitData = (GameClient.EnemyHitData) message.getData();
+                    // Forward the hit info to all clients (including sender for confirmation)
                     server.broadcast(message);
                     break;
+                case ENEMY_SPAWN:
+                    // When a host spawns an enemy, add sender's client ID and broadcast to others
+                    GameClient.EnemySpawnData spawnData = (GameClient.EnemySpawnData) message.getData();
+                    spawnData.setPlayerId(clientId); // Set who created this enemy
+                    server.broadcast(new NetworkMessage(NetworkMessage.MessageType.ENEMY_SPAWN, spawnData));
+                    break;
                 case GAME_OVER:
-                    // Un joueur a perdu, informer l'autre
+                    // A player lost, inform the other
                     server.broadcastExcept(clientId, message);
                     break;
                 default:
