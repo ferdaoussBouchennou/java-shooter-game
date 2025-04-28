@@ -10,7 +10,8 @@ public class NetworkMessage implements Serializable {
         PLAYER_UPDATE,
         ENEMY_HIT,
         GAME_START,
-        GAME_OVER
+        GAME_OVER,
+        ENEMY_SPAWN // New message type
     }
 
     private final MessageType type;

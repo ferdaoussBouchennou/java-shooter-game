@@ -174,6 +174,11 @@ public class MultiplayerController {
             }
 
             @Override
+            public void onEnemySpawn(GameClient.EnemySpawnData data) {
+                // Géré par MultiplayerGameController
+            }
+
+            @Override
             public void onGameStart() {
                 Platform.runLater(() -> {
                     System.out.println("Reçu GAME_START du serveur");

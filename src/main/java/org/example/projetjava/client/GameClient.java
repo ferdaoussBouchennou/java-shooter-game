@@ -145,6 +145,11 @@ public class GameClient {
                         messageHandler.onGameOver((Integer) message.getData());
                     }
                     break;
+                case ENEMY_SPAWN:
+                    if (messageHandler != null) {
+                        messageHandler.onEnemySpawn((EnemySpawnData) message.getData());
+                    }
+                    break;
                 default:
                     break;
             }
@@ -165,10 +170,52 @@ public class GameClient {
     public interface MessageHandler {
         void onPlayerUpdate(PlayerState state);
         void onEnemyHit(EnemyHitData data);
+        void onEnemySpawn(EnemySpawnData data);
         void onGameStart();
         void onGameOver(int clientId);
     }
+    public static class EnemySpawnData implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private int enemyId;
+        private String enemyType;
+        private double xPosition;
+        private int playerId;
 
+        public EnemySpawnData(int enemyId, String enemyType, double xPosition, int playerId) {
+            this.enemyId = enemyId;
+            this.enemyType = enemyType;
+            this.xPosition = xPosition;
+            this.playerId = playerId;
+        }
+
+        // For client-to-server messages, where playerId will be set by the server
+        public EnemySpawnData(int enemyId, String enemyType, double xPosition) {
+            this(enemyId, enemyType, xPosition, -1);
+        }
+
+        public int getEnemyId() {
+            return enemyId;
+        }
+
+        public String getEnemyType() {
+            return enemyType;
+        }
+
+        public double getXPosition() {
+            return xPosition;
+        }
+
+        public int getPlayerId() {
+            return playerId;
+        }
+
+        public void setPlayerId(int playerId) {
+            this.playerId = playerId;
+        }
+    }
+    public void sendEnemySpawn(EnemySpawnData data) {
+        sendMessage(new NetworkMessage(NetworkMessage.MessageType.ENEMY_SPAWN, data));
+    }
     public static class EnemyHitData implements Serializable {
         private static final long serialVersionUID = 1L;
         private int enemyId;
