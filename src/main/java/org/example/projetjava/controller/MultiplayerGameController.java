@@ -496,7 +496,7 @@ public class MultiplayerGameController {
                     }
                 });
             }
-        }, 0, 500, TimeUnit.MILLISECONDS);
+        }, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     private void generateEnnemi() {
@@ -512,7 +512,6 @@ public class MultiplayerGameController {
         double xPos = margin + Math.random() * (rootPane.getWidth() - 40 - margin*2);
 
         int enemyId = nextEnemyId++;
-
         // Create enemy locally
         createEnemy(enemyId, enemyType, xPos);
 
@@ -708,6 +707,8 @@ public class MultiplayerGameController {
             rootPane.getChildren().add(gameOverLabel);
             gameOverLabel.setLayoutX(rootPane.getWidth()/2 - 150);
             gameOverLabel.setLayoutY(rootPane.getHeight()/2 - 50);
+            gameLoop.stop();
+            gameOver();
         });
     }
 
