@@ -196,9 +196,11 @@ public class MultiplayerGameController {
                 Platform.runLater(() -> {
                     // Fin de partie
                     if (clientId != client.getClientId()) {
-                        showGameOver(true); // L'autre joueur a perdu
+                        // L'autre joueur a perdu, donc nous avons gagné
+                        showGameOver(true); // Vous avez gagné
                     } else {
-                        showGameOver(false); // Vous avez perdu
+                        // Nous avons perdu
+                        showGameOver(false); // Game over
                     }
                 });
             }
@@ -736,8 +738,28 @@ public class MultiplayerGameController {
             rootPane.getChildren().add(gameOverLabel);
             gameOverLabel.setLayoutX(rootPane.getWidth()/2 - 150);
             gameOverLabel.setLayoutY(rootPane.getHeight()/2 - 50);
-            gameLoop.stop();
-            gameOver();
+
+            // Si le jeu n'est pas déjà terminé
+            if (gameRunning) {
+                gameRunning = false;
+
+                if (gameLoop != null) {
+                    gameLoop.stop();
+                }
+
+                if (gameExecutor != null && !gameExecutor.isShutdown()) {
+                    gameExecutor.shutdownNow();
+                }
+
+                // Sauvegarder le score uniquement si nous sommes en game over (pas si nous avons gagné)
+                if (!won) {
+                    try {
+                        ConnexionBD.enregistrerJoueur(playerName, "Multijoueur", avionData.getNom(), score);
+                    } catch (SQLException e) {
+                        System.err.println("Erreur sauvegarde score: " + e.getMessage());
+                    }
+                }
+            }
         });
     }
 
