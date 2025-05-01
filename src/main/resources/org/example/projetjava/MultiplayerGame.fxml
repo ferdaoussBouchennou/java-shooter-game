@@ -13,6 +13,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <AnchorPane fx:id="rootPane" onKeyPressed="#handleKeyPressed" onKeyReleased="#handleKeyReleased"
             focusTraversable="true"
             maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
@@ -63,6 +65,66 @@
             </children>
         </VBox>
 
+        <!-- Bouton pour afficher/masquer le chat -->
+        <Button fx:id="toggleChatButton" layoutX="10" layoutY="350"
+                text="Chat" prefWidth="80.0" prefHeight="30.0"
+                style="-fx-background-color: #38fff5; -fx-text-fill: black; -fx-font-weight: bold; -fx-background-radius: 10;">
+            <effect>
+                <DropShadow height="10.0" radius="4.5" spread="0.1" width="10.0">
+                    <color>
+                        <Color opacity="0.5" />
+                    </color>
+                </DropShadow>
+            </effect>
+        </Button>
+
+        <!-- Panneau de chat (en bas à gauche) - initialement invisible -->
+        <VBox fx:id="chatPane" layoutX="10" layoutY="380" prefHeight="150" prefWidth="300"
+              style="-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 10; -fx-padding: 8;"
+              visible="false">
+            <effect>
+                <DropShadow height="10.0" radius="4.5" spread="0.1" width="10.0">
+                    <color>
+                        <Color opacity="0.5" />
+                    </color>
+                </DropShadow>
+            </effect>
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <children>
+                        <Label text="CHAT" textFill="#38fff5">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+                        <Button fx:id="hideChatButton" text="X"
+                                style="-fx-background-color: transparent; -fx-text-fill: #ff3860; -fx-font-weight: bold;">
+                            <HBox.margin>
+                                <Insets left="230.0" />
+                            </HBox.margin>
+                        </Button>
+                    </children>
+                </HBox>
+                <TextArea fx:id="chatArea" prefHeight="100.0" prefWidth="280.0"
+                          style="-fx-control-inner-background: rgba(0,0,0,0.8); -fx-text-fill: white;"
+                          wrapText="true">
+                    <VBox.margin>
+                        <Insets bottom="5.0" />
+                    </VBox.margin>
+                </TextArea>
+                <HBox spacing="5">
+                    <children>
+                        <TextField fx:id="chatInput" promptText="Votre message..." prefWidth="230.0"
+                                   style="-fx-background-color: rgba(255,255,255,0.8);">
+                        </TextField>
+                        <Button fx:id="sendButton" text="Envoyer" prefWidth="70.0"
+                                style="-fx-background-color: #38fff5; -fx-text-fill: black;">
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
         <!-- Panneau d'information de l'adversaire (droite) -->
         <VBox alignment="TOP_RIGHT" layoutX="590" layoutY="10" prefWidth="200" spacing="5"
               style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 10; -fx-padding: 8;">
@@ -92,8 +154,18 @@
                         <Font name="System Bold" size="16.0" />
                     </font>
                 </Label>
+
             </children>
         </VBox>
+
+        <!-- Badge de notification de message -->
+        <Label fx:id="chatNotificationBadge" layoutX="85" layoutY="345"
+               text="0" visible="false"
+               style="-fx-background-color: #ff3860; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 2 6;">
+            <font>
+                <Font name="System Bold" size="10.0" />
+            </font>
+        </Label>
 
         <!-- Panneau des contrôles (bas de l'écran) -->
         <HBox alignment="CENTER" layoutY="540.0" prefHeight="50.0" prefWidth="800.0"
