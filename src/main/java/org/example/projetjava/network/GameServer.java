@@ -174,6 +174,10 @@ public class GameServer {
                     // A player lost, inform the other
                     server.broadcastExcept(clientId, message);
                     break;
+                case CHAT_MESSAGE:
+                    // Forward the chat message to all clients
+                    server.broadcast(message);
+                    break;
                 default:
                     break;
             }

@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.example.projetjava.client.ChatMessage;
 import org.example.projetjava.client.GameClient;
 import org.example.projetjava.manager.AvionManager;
 import org.example.projetjava.model.Avion;
@@ -162,6 +163,7 @@ public class MultiplayerController {
 
     private boolean connectAsClient(String host, int port, String playerName) {
         client = new GameClient(host, port);
+        client.setPlayerName(playerName);
         client.setMessageHandler(new GameClient.MessageHandler() {
             @Override
             public void onPlayerUpdate(PlayerState state) {
@@ -189,6 +191,11 @@ public class MultiplayerController {
             @Override
             public void onGameOver(int clientId) {
                 // Géré par MultiplayerGameController
+            }
+
+            @Override
+            public void onChatMessage(ChatMessage message) {
+
             }
         });
 

@@ -4,12 +4,15 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.example.projetjava.client.ChatMessage;
 import org.example.projetjava.client.GameClient;
 import org.example.projetjava.model.Avion;
 import org.example.projetjava.model.PlayerState;
@@ -31,6 +34,13 @@ public class MultiplayerGameController {
     @FXML private Label vieLabel;
     @FXML private Label otherPlayerScoreLabel;
     @FXML private Label otherPlayerVieLabel;
+    @FXML private javafx.scene.control.TextArea chatArea;
+    @FXML private javafx.scene.control.TextField chatInput;
+    @FXML private javafx.scene.control.Button sendButton;
+    @FXML private VBox chatPane;
+    @FXML private Button toggleChatButton;
+    @FXML private Button hideChatButton;
+    @FXML private Label chatNotificationBadge;
 
     private ImageView playerShip;
     private ImageView otherPlayerShip;
@@ -56,6 +66,8 @@ public class MultiplayerGameController {
     private long otherPlayerLastShotTime = 0;
     private Avion otherPlayerAvionData; // Données de l'avion de l'autre joueur
     private int nextEnemyId = 0;
+    private int unreadMessageCount = 0;
+    private boolean chatVisible = false;
 
     public void initializeGame(String playerName, GameClient client, boolean isHost, String avionChoisi) {
         this.playerName = playerName;
@@ -85,6 +97,7 @@ public class MultiplayerGameController {
         initializePlayerShip();
         initializeOtherPlayer();
         initializeUI();
+        initializeChat();
 
         rootPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
@@ -186,6 +199,22 @@ public class MultiplayerGameController {
                         showGameOver(true); // L'autre joueur a perdu
                     } else {
                         showGameOver(false); // Vous avez perdu
+                    }
+                });
+            }
+            @Override
+            public void onChatMessage(ChatMessage message) {
+                Platform.runLater(() -> {
+                    String formattedMessage = String.format("[%s]: %s\n",
+                            message.getSenderName(),
+                            message.getMessage());
+                    chatArea.appendText(formattedMessage);
+
+                    // Si le message vient de l'autre joueur et que le chat est caché, incrémenter le compteur
+                    if (message.getSenderId() != client.getClientId() && !chatVisible) {
+                        unreadMessageCount++;
+                        chatNotificationBadge.setText(String.valueOf(unreadMessageCount));
+                        chatNotificationBadge.setVisible(true);
                     }
                 });
             }
@@ -496,7 +525,7 @@ public class MultiplayerGameController {
                     }
                 });
             }
-        }, 0, 100, TimeUnit.MILLISECONDS);
+        }, 0, 200, TimeUnit.MILLISECONDS);
     }
 
     private void generateEnnemi() {
@@ -742,5 +771,50 @@ public class MultiplayerGameController {
                 shooting = false;
                 break;
         }
+    }
+    private void initializeChat() {
+        chatArea.setEditable(false);
+        chatArea.setWrapText(true);
+
+        // Rendre le panneau de chat invisible au démarrage
+        chatPane.setVisible(false);
+        chatVisible = false;
+
+        // Initialiser le compteur de notifications
+        unreadMessageCount = 0;
+        chatNotificationBadge.setVisible(false);
+
+        // Configurer les boutons du chat
+        toggleChatButton.setOnAction(event -> toggleChatPane());
+        hideChatButton.setOnAction(event -> toggleChatPane());
+
+        // Configurer les actions pour l'envoi de messages
+        sendButton.setOnAction(event -> sendChatMessage());
+        chatInput.setOnAction(event -> sendChatMessage());
+
+        // Message de bienvenue
+        chatArea.appendText("Chat du jeu initialisé. Bienvenue " + playerName + "!\n");
+    }
+    // 4. Ajouter cette méthode pour envoyer des messages
+    private void sendChatMessage() {
+        String message = chatInput.getText();
+        if (message != null && !message.trim().isEmpty()) {
+            client.sendChatMessage(message);
+            chatInput.clear();
+            chatInput.requestFocus();
+        }
+    }
+    private void toggleChatPane() {
+        chatVisible = !chatVisible;
+        chatPane.setVisible(chatVisible);
+
+        // Si le chat devient visible, réinitialiser les notifications
+        if (chatVisible) {
+            unreadMessageCount = 0;
+            chatNotificationBadge.setVisible(false);
+        }
+
+        // Remettre le focus sur la zone de jeu pour continuer à recevoir les événements clavier
+        rootPane.requestFocus();
     }
 }

@@ -14,10 +14,19 @@ public class GameClient {
     private boolean connected = false;
     private ClientListener listener;
     private int clientId = -1;
+    private String playerName;
 
     public GameClient(String host, int port) {
         this.host = host;
         this.port = port;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public String getPlayerName() {
+        return playerName;
     }
 
     public boolean connect() {
@@ -63,6 +72,15 @@ public class GameClient {
 
     public void sendGameOver() {
         sendMessage(new NetworkMessage(NetworkMessage.MessageType.GAME_OVER, clientId));
+    }
+
+    public void sendChatMessage(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return;
+        }
+
+        ChatMessage chatMsg = new ChatMessage(clientId, playerName, message.trim());
+        sendMessage(new NetworkMessage(NetworkMessage.MessageType.CHAT_MESSAGE, chatMsg));
     }
 
     private void sendMessage(NetworkMessage message) {
@@ -150,6 +168,11 @@ public class GameClient {
                         messageHandler.onEnemySpawn((EnemySpawnData) message.getData());
                     }
                     break;
+                case CHAT_MESSAGE:
+                    if (messageHandler != null) {
+                        messageHandler.onChatMessage((ChatMessage) message.getData());
+                    }
+                    break;
                 default:
                     break;
             }
@@ -173,6 +196,7 @@ public class GameClient {
         void onEnemySpawn(EnemySpawnData data);
         void onGameStart();
         void onGameOver(int clientId);
+        void onChatMessage(ChatMessage message);
     }
     public static class EnemySpawnData implements Serializable {
         private static final long serialVersionUID = 1L;
