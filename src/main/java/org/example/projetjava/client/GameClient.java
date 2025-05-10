@@ -118,19 +118,19 @@ public class GameClient {
             } catch (IOException e) {
                 if (running) {
                     System.err.println("Erreur de réception IO: " + e.getMessage());
-                    e.printStackTrace(); // Print the full stack trace
+                    e.printStackTrace();
                     disconnect();
                 }
             } catch (ClassNotFoundException e) {
                 if (running) {
                     System.err.println("Erreur de réception ClassNotFound: " + e.getMessage());
-                    e.printStackTrace(); // Print the full stack trace
+                    e.printStackTrace();
                     disconnect();
                 }
             } catch (Exception e) {
                 if (running) {
                     System.err.println("Erreur inattendue: " + e.getMessage());
-                    e.printStackTrace(); // Print the full stack trace
+                    e.printStackTrace();
                     disconnect();
                 }
             }

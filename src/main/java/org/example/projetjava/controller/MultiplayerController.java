@@ -27,12 +27,10 @@ import java.util.concurrent.Executors;
 public class MultiplayerController {
     @FXML private RadioButton radioHost;
     @FXML private RadioButton radioJoin;
-    @FXML private ToggleGroup hostClientGroup;
     @FXML private TextField playerNameField;
     @FXML private TextField ipField;
     @FXML private TextField portField;
     @FXML private Button startButton;
-    @FXML private Button backButton;
     @FXML private Label statusLabel;
     @FXML private ComboBox<String> avionSelector;
     @FXML private ImageView avionPreview;
@@ -42,10 +40,11 @@ public class MultiplayerController {
     private GameServer server;
     private GameClient client;
     private ExecutorService executorService;
-    private String selectedAvion = "MiG-51S"; // Valeur par défaut
+    private String selectedAvion = "MiG-51S";
 
     @FXML
     public void initialize() {
+        //creer un thread unique pour les tâches réseau
         executorService = Executors.newSingleThreadExecutor();
 
         // Par défaut, sélectionner l'option d'hébergement

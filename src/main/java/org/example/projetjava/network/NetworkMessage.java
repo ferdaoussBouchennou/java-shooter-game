@@ -11,8 +11,8 @@ public class NetworkMessage implements Serializable {
         ENEMY_HIT,
         GAME_START,
         GAME_OVER,
-        ENEMY_SPAWN, // New message type
-        CHAT_MESSAGE  // Message type for chat functionality
+        ENEMY_SPAWN,
+        CHAT_MESSAGE
     }
 
     private final MessageType type;

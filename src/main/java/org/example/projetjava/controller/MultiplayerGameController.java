@@ -64,7 +64,7 @@ public class MultiplayerGameController {
     private double otherPlayerX = 0;
     private boolean otherPlayerShooting = false;
     private long otherPlayerLastShotTime = 0;
-    private Avion otherPlayerAvionData; // Données de l'avion de l'autre joueur
+    private Avion otherPlayerAvionData;
     private int nextEnemyId = 0;
     private int unreadMessageCount = 0;
     private boolean chatVisible = false;
@@ -220,7 +220,6 @@ public class MultiplayerGameController {
                     }
                 });
             }
-
         });
     }
 
@@ -281,7 +280,6 @@ public class MultiplayerGameController {
         if (avionType == null || otherPlayerAvionData == null || otherPlayerShip == null) {
             return;
         }
-
         try {
             // Charger l'image de l'avion choisi par l'autre joueur
             String imagePath = otherPlayerAvionData.getImagePath();
@@ -527,7 +525,7 @@ public class MultiplayerGameController {
                     }
                 });
             }
-        }, 0, 200, TimeUnit.MILLISECONDS);
+        }, 0, 70, TimeUnit.MILLISECONDS);
     }
 
     private void generateEnnemi() {
