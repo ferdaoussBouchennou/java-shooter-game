@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConnexionBD {
-    private static final String URL = "jdbc:mysql://localhost:3306/jeu_tir_db";
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
+    // Pour les connexions depuis la même machine
+    // Sur les autres ordinateurs, utilisez l'adresse IP de votre serveur
+    private static final String URL = "jdbc:mysql://192.168.1.37:3306/jeu_tir_db";
+    private static final String USER = "jeu_user";
+    private static final String PASSWORD = "votre_mot_de_passe_jeu";
 
     public static Connection seconnecter() throws SQLException {
         try {

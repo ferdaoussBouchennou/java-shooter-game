@@ -3,12 +3,14 @@ package org.example.projetjava.network;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.example.projetjava.client.GameClient;
+import org.example.projetjava.model.ConnexionBD;
 import org.example.projetjava.model.GameState;
 import org.example.projetjava.model.PlayerState;
 
@@ -172,6 +174,13 @@ public class GameServer {
                     break;
                 case GAME_OVER:
                     // A player lost, inform the other
+                    server.broadcastExcept(clientId, message);
+                    PlayerState player = (PlayerState) message.getData();
+                    try {
+                        ConnexionBD.enregistrerJoueur(player.getAvionType(), player.getAvionType(), player.getAvionType(), player.getScore());
+                    } catch (SQLException e) {
+                        System.err.println("Erreur BD : " + e.getMessage());
+                    }
                     server.broadcastExcept(clientId, message);
                     break;
                 case CHAT_MESSAGE:
