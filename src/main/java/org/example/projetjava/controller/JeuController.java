@@ -20,6 +20,7 @@ import org.example.projetjava.model.Avion;
 import org.example.projetjava.manager.AvionManager;
 import org.example.projetjava.model.ConnexionBD;
 
+
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class JeuController {
     @FXML private ImageView backgroundImage;
     @FXML private Label scoreLabel;
     @FXML private Label vieLabel;
+    @FXML private Label niveauLabel; // Nouveau label pour afficher le niveau actuel
 
     private ImageView playerShip;
     private Avion avionData;
@@ -47,13 +49,21 @@ public class JeuController {
     private boolean gameRunning = true;
     private String currentNiveau;
     private DifficultySettings difficulty;
+    private int currentLevelIndex = 0; // Pour suivre le niveau actuel (0=débutant, 1=intermédiaire, 2=haut niveau)
+    private boolean levelChanging = false; // Pour éviter des changements de niveau multiples en même temps
+
+
+
     @FXML
     private void initialize() {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
         rootPane.setFocusTraversable(true);
         rootPane.requestFocus();
+
+
     }
+
     public void showTransition(String playerName) {
         ScaleTransition scale = new ScaleTransition(Duration.seconds(0.7), readyText);
         scale.setFromX(0.5);
@@ -80,18 +90,116 @@ public class JeuController {
         });
         sequence.play();
     }
+
     private void setupDifficulty() {
+        // Définir l'indice de niveau en fonction du niveau sélectionné
         switch(currentNiveau) {
             case "Intermédiaire":
-                difficulty = new DifficultySettings(0.15, 3, 1.2, 10, 8, 1.0);
+                currentLevelIndex = 1;
                 break;
             case "Haut niveau":
-                difficulty = new DifficultySettings(0.25, 5, 1.5, 8, 12, 1.2);
+                currentLevelIndex = 2;
                 break;
             default:
+                currentLevelIndex = 0;
+        }
+
+        updateDifficultySettings();
+    }
+
+    // Nouvelle méthode pour mettre à jour les paramètres de difficulté en fonction du niveau
+    private void updateDifficultySettings() {
+        switch(currentLevelIndex) {
+            case 1: // Intermédiaire
+                difficulty = new DifficultySettings(0.15, 3, 1.2, 10, 8, 1.0);
+                currentNiveau = "Intermédiaire";
+                break;
+            case 2: // Haut niveau
+                difficulty = new DifficultySettings(0.25, 5, 1.5, 8, 12, 1.2);
+                currentNiveau = "Haut niveau";
+                break;
+            default: // Débutant (0)
                 difficulty = new DifficultySettings(0.08, 2, 0.8, 15, 5, 0.8);
+                currentNiveau = "Débutant";
+        }
+
+        // Mettre à jour l'affichage du niveau
+        if (niveauLabel != null) {
+            niveauLabel.setText("Niveau: " + currentNiveau);
         }
     }
+
+    // Nouvelle méthode pour vérifier et mettre à jour le niveau en fonction du score
+    private void checkAndUpdateLevel() {
+        if (levelChanging) return; // Éviter les mises à jour multiples
+
+        int newLevelIndex = currentLevelIndex;
+
+        // Définir le niveau en fonction du score
+        if (score >= 1000 && currentLevelIndex < 2) {
+            newLevelIndex = 2; // Haut niveau
+        } else if (score >= 500 && currentLevelIndex < 1) {
+            newLevelIndex = 1; // Intermédiaire
+        }
+
+        // Si le niveau a changé
+        if (newLevelIndex > currentLevelIndex) {
+            levelChanging = true;
+            currentLevelIndex = newLevelIndex;
+
+            // Mettre à jour les paramètres de difficulté
+            updateDifficultySettings();
+
+            // Afficher une animation de changement de niveau
+            showLevelUpAnimation();
+
+            // Réinitialiser le flag après un délai
+            gameExecutor.schedule(() -> levelChanging = false, 3, TimeUnit.SECONDS);
+        }
+    }
+
+    // Nouvelle méthode pour afficher une animation de changement de niveau
+    private void showLevelUpAnimation() {
+        Platform.runLater(() -> {
+            Label levelUpText = new Label("NIVEAU " + (currentLevelIndex + 1) + "\n" + currentNiveau.toUpperCase());
+            levelUpText.setFont(new Font("Arial", 30));
+            levelUpText.setTextFill(Color.GOLD);
+            levelUpText.setTextAlignment(TextAlignment.CENTER);
+            levelUpText.setStyle("-fx-background-color: rgba(0,0,0,0.5); -fx-padding: 20px;");
+
+            levelUpText.setLayoutX(rootPane.getWidth()/2 - 150);
+            levelUpText.setLayoutY(rootPane.getHeight()/2 - 50);
+
+            rootPane.getChildren().add(levelUpText);
+
+            // Animation
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(500), levelUpText);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(500), levelUpText);
+            scaleUp.setFromX(0.5);
+            scaleUp.setFromY(0.5);
+            scaleUp.setToX(1.2);
+            scaleUp.setToY(1.2);
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), levelUpText);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+
+            SequentialTransition sequence = new SequentialTransition(
+                    new ParallelTransition(fadeIn, scaleUp),
+                    pause,
+                    fadeOut
+            );
+
+            sequence.setOnFinished(event -> rootPane.getChildren().remove(levelUpText));
+            sequence.play();
+        });
+    }
+
     public void initializeGame(String playerName, String niveau, String avionChoisi) {
         this.playerName = playerName;  // Initialiser le champ playerName
         this.currentNiveau = niveau;
@@ -103,12 +211,15 @@ public class JeuController {
         this.pointsVieActuels = avionData.getPointsVie();
         showTransition(playerName);
     }
+
     private void startGame() {
         initializePlayerShip();
         initializeUI();
         startGameThreads();
         rootPane.requestFocus();
+
     }
+
     private void initializePlayerShip() {
         if (avionData == null) {
             System.err.println("Aucune donnée d'avion disponible");
@@ -143,8 +254,8 @@ public class JeuController {
             rootPane.getChildren().add(playerShip);
         }
     }
-    private void initializeUI() {
 
+    private void initializeUI() {
         vieLabel = new Label("Vie: " + pointsVieActuels + "/" + avionData.getPointsVie());
         vieLabel.setFont(new Font("Arial", 16));
         vieLabel.setTextFill(Color.WHITE);
@@ -153,7 +264,6 @@ public class JeuController {
         AnchorPane.setLeftAnchor(vieLabel, 10.0);
         rootPane.getChildren().add(vieLabel);
 
-
         scoreLabel = new Label("Score: 0");
         scoreLabel.setFont(new Font("Arial", 16));
         scoreLabel.setTextFill(Color.WHITE);
@@ -161,18 +271,25 @@ public class JeuController {
         AnchorPane.setTopAnchor(scoreLabel, 10.0);
         AnchorPane.setRightAnchor(scoreLabel, 10.0);
         rootPane.getChildren().add(scoreLabel);
+
+        // Ajouter le label pour le niveau
+        niveauLabel = new Label("Niveau: " + currentNiveau);
+        niveauLabel.setFont(new Font("Arial", 16));
+        niveauLabel.setTextFill(Color.WHITE);
+        niveauLabel.setStyle("-fx-background-color: rgba(0,0,0,0.5); -fx-padding: 5px;");
+        AnchorPane.setTopAnchor(niveauLabel, 40.0); // Positionner sous le score
+        AnchorPane.setRightAnchor(niveauLabel, 10.0);
+        rootPane.getChildren().add(niveauLabel);
     }
 
     private void startGameThreads() {
-
         gameExecutor = Executors.newScheduledThreadPool(3);
         startEnemyGenerator();
         startEnemyMovement();
         startCollisionDetection();
-
-
         startMainGameLoop();
     }
+
     private void startEnemyGenerator() {
         gameExecutor.scheduleAtFixedRate(new EnemyGeneratorTask(), 0, 200, TimeUnit.MILLISECONDS);
     }
@@ -197,6 +314,7 @@ public class JeuController {
             }
         }
     }
+
     private void updatePlayerPosition() {
         if (playerShip == null) return;
 
@@ -213,6 +331,7 @@ public class JeuController {
             if (newX < rootPane.getWidth() - playerShip.getFitWidth()) playerShip.setLayoutX(newX);
         }
     }
+
     private void handleShooting() {
         if (shooting && playerShip != null) {
             long currentTime = System.currentTimeMillis();
@@ -225,6 +344,7 @@ public class JeuController {
             }
         }
     }
+
     private void startEnemyMovement() {
         gameExecutor.scheduleAtFixedRate(new EnemyMovementTask(), 0, 16, TimeUnit.MILLISECONDS);
     }
@@ -242,6 +362,7 @@ public class JeuController {
             }
         }
     }
+
     private void startCollisionDetection() {
         gameExecutor.scheduleAtFixedRate(new CollisionDetectionTask(), 0, 16, TimeUnit.MILLISECONDS);
     }
@@ -259,6 +380,7 @@ public class JeuController {
             }
         }
     }
+
     private void startMainGameLoop() {
         if (gameLoop != null) {
             gameLoop.stop();
@@ -273,6 +395,7 @@ public class JeuController {
         };
         gameLoop.start();
     }
+
     private String getProjectileImage(int puissanceTir) {
         if (puissanceTir >= 4) {
             return "/org/example/projetjava/kenney_space-shooter-redux/PNG/Lasers/laserRed06.png";
@@ -282,6 +405,7 @@ public class JeuController {
             return "/org/example/projetjava/kenney_space-shooter-redux/PNG/Lasers/laserBlue03.png";
         }
     }
+
     private void fireProjectile() {
         if (avionData == null) return;
         String projectileImage = getProjectileImage(avionData.getPuissanceTir());
@@ -295,7 +419,9 @@ public class JeuController {
 
         rootPane.getChildren().add(projectile);
         projectiles.add(projectile);
+
     }
+
     private void updateProjectiles() {
         List<ImageView> toRemove = new ArrayList<>();
 
@@ -310,16 +436,18 @@ public class JeuController {
         }
         projectiles.removeAll(toRemove);
     }
+
     private String[] getEnemyTypes() {
-        switch(currentNiveau) {
-            case "Intermédiaire":
+        switch(currentLevelIndex) {
+            case 1: // Intermédiaire
                 return new String[]{"enemyRed3.png", "enemyBlack3.png"};
-            case "Haut niveau":
+            case 2: // Haut niveau
                 return new String[]{"enemyRed5.png", "enemyBlack5.png"};
-            default:
+            default: // Débutant
                 return new String[]{"enemyRed1.png", "enemyBlack1.png"};
         }
     }
+
     private void generateEnnemi() {
         if (ennemis.size() >= difficulty.maxEnemies) return;
 
@@ -333,7 +461,6 @@ public class JeuController {
             ennemi.setFitWidth(size);
             ennemi.setFitHeight(size);
 
-
             double margin = size * 0.5;
             double xPos = margin + Math.random() * (rootPane.getWidth() - size - margin*2);
 
@@ -342,7 +469,6 @@ public class JeuController {
 
             rootPane.getChildren().add(ennemi);
             ennemis.add(ennemi);
-
 
             FadeTransition ft = new FadeTransition(Duration.millis(300), ennemi);
             ft.setFromValue(0);
@@ -374,8 +500,8 @@ public class JeuController {
         }
         ennemis.removeAll(toRemove);
     }
-    private void prendreDegats(double baseDamage) {
 
+    private void prendreDegats(double baseDamage) {
         pointsVieActuels -=1;
         updateVieDisplay();
 
@@ -390,13 +516,14 @@ public class JeuController {
             gameOver();
         }
     }
+
     private boolean checkCollision(ImageView node1, ImageView node2) {
         return node1.getBoundsInParent().intersects(node2.getBoundsInParent());
     }
+
     private void checkCollisions() {
         List<ImageView> toRemoveProjectiles = new ArrayList<>();
         List<ImageView> toRemoveEnnemis = new ArrayList<>();
-
 
         for (ImageView projectile : projectiles) {
             for (ImageView ennemi : ennemis) {
@@ -405,6 +532,9 @@ public class JeuController {
                     toRemoveEnnemis.add(ennemi);
                     score += difficulty.scorePerEnemy;
                     updateScoreDisplay();
+
+                    // Vérifier si le score atteint un seuil pour changer de niveau
+                    checkAndUpdateLevel();
                 }
             }
         }
@@ -416,12 +546,12 @@ public class JeuController {
             }
         }
 
-
         projectiles.removeAll(toRemoveProjectiles);
         ennemis.removeAll(toRemoveEnnemis);
         rootPane.getChildren().removeAll(toRemoveProjectiles);
         rootPane.getChildren().removeAll(toRemoveEnnemis);
     }
+
     private void updateVieDisplay() {
         vieLabel.setText("Vie: " + pointsVieActuels + "/" + avionData.getPointsVie());
 
@@ -432,12 +562,12 @@ public class JeuController {
             vieLabel.setTextFill(Color.ORANGE);
         }
     }
+
     private void gameOver() {
         gameRunning = false;
         if (gameExecutor != null) {
             gameExecutor.shutdownNow();
         }
-
         try {
             ConnexionBD.enregistrerJoueur(this.playerName, currentNiveau, avionData.getNom(), score);
         } catch (SQLException e) {
