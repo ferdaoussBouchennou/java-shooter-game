@@ -196,6 +196,16 @@ public class MultiplayerController {
             public void onChatMessage(ChatMessage message) {
 
             }
+
+            @Override
+            public void onPowerUpSpawn(GameClient.PowerUpData data) {
+
+            }
+
+            @Override
+            public void onPowerUpCollected(GameClient.PowerUpCollectedData data) {
+
+            }
         });
 
         boolean connected = client.connect();

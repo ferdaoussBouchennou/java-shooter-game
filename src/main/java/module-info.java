@@ -11,6 +11,7 @@ module org.example.projetjava {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires javafx.media;
 
     opens org.example.projetjava to javafx.fxml;
     exports org.example.projetjava;

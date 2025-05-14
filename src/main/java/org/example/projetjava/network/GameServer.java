@@ -178,6 +178,16 @@ public class GameServer {
                     // Forward the chat message to all clients
                     server.broadcast(message);
                     break;
+                case POWER_UP_SPAWN:
+                    // Quand l'hôte génère un power-up, ajouter l'ID client et diffuser aux autres
+                    GameClient.PowerUpData powerUpData = (GameClient.PowerUpData) message.getData();
+                    powerUpData.setPlayerId(clientId); // Définir qui a créé ce power-up
+                    server.broadcast(new NetworkMessage(NetworkMessage.MessageType.POWER_UP_SPAWN, powerUpData));
+                    break;
+                case POWER_UP_COLLECTED:
+                    // Diffuser l'information de collecte à tous les clients
+                    server.broadcast(message);
+                    break;
                 default:
                     break;
             }

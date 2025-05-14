@@ -51,6 +51,27 @@ public class JeuController {
     private DifficultySettings difficulty;
     private int currentLevelIndex = 0; // Pour suivre le niveau actuel (0=débutant, 1=intermédiaire, 2=haut niveau)
     private boolean levelChanging = false; // Pour éviter des changements de niveau multiples en même temps
+    private final List<ImageView> powerUps = new ArrayList<>();
+    private int nextPowerUpId = 0;
+    private long lastPowerUpTime = 0;
+    private List<Integer> activePowerUpIds = new ArrayList<>();
+    private static class PowerUpUserData {
+        private final int id;
+        private final String type;
+
+        public PowerUpUserData(int id, String type) {
+            this.id = id;
+            this.type = type;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
 
 
 
@@ -287,7 +308,158 @@ public class JeuController {
         startEnemyGenerator();
         startEnemyMovement();
         startCollisionDetection();
+        startPowerUpGenerator(); // Ajouter cette ligne
         startMainGameLoop();
+    }
+    // 4. Ajouter cette méthode pour générer les power-ups
+    private void startPowerUpGenerator() {
+        gameExecutor.scheduleAtFixedRate(() -> {
+            if (gameRunning && Math.random() < 0.1) {
+                Platform.runLater(() -> {
+                    generatePowerUp();
+                });
+                lastPowerUpTime = System.currentTimeMillis();
+            }
+        }, 5000, 1000, TimeUnit.MILLISECONDS);
+    }
+    private void generatePowerUp() {
+        // Définir les types de power-ups avec leurs chemins corrects
+        String[] powerUpTypes = {"Green_shield", "Blue_bolt", "Red_star"};
+        String powerUpType = powerUpTypes[(int)(Math.random() * powerUpTypes.length)];
+
+        // Position aléatoire sur l'axe X
+        double margin = 40;
+        double xPos = margin + Math.random() * (rootPane.getWidth() - 60);
+
+        // Générer un ID unique pour ce power-up
+        int powerUpId = nextPowerUpId++;
+
+        // Créer le power-up localement
+        createPowerUp(powerUpId, powerUpType, xPos);
+    }
+    private void createPowerUp(int powerUpId, String powerUpType, double xPos) {
+        try {
+            // Extraire les informations du type (couleur et type)
+            String[] parts = powerUpType.split("_");
+            String color = parts[0].toLowerCase();
+            String type = parts[1].toLowerCase();
+
+            // Construire le chemin d'accès correct
+            String imagePath = "/org/example/projetjava/kenney_space-shooter-redux/PNG/Power-ups/powerup" + color + "_" + type + ".png";
+
+            ImageView powerUp = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
+            powerUp.setFitWidth(30);
+            powerUp.setFitHeight(30);
+
+            // Stocker l'ID et le type dans powerUp.userData
+            powerUp.setUserData(new PowerUpUserData(powerUpId, type));
+
+            powerUp.setLayoutX(xPos);
+            powerUp.setLayoutY(-30);
+
+            rootPane.getChildren().add(powerUp);
+            powerUps.add(powerUp);
+            activePowerUpIds.add(powerUpId);
+
+            // Animer l'apparition du power-up
+            FadeTransition ft = new FadeTransition(Duration.millis(500), powerUp);
+            ft.setFromValue(0.0);
+            ft.setToValue(1.0);
+            ft.play();
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la création du power-up: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+    private void updatePowerUps() {
+        List<ImageView> toRemove = new ArrayList<>();
+
+        for (ImageView powerUp : powerUps) {
+            // Mouvement
+            powerUp.setLayoutY(powerUp.getLayoutY() + 1.5);
+
+            // Rotation pour effet visuel
+            powerUp.setRotate((powerUp.getRotate() + 1) % 360);
+
+            // Vérifier collision avec le joueur
+            if (checkCollision(playerShip, powerUp)) {
+                PowerUpUserData userData = (PowerUpUserData) powerUp.getUserData();
+
+                // Appliquer l'effet du power-up localement
+                applyPowerUp(userData.getType());
+
+                toRemove.add(powerUp);
+                continue;
+            }
+
+            // Supprimer si hors écran
+            if (powerUp.getLayoutY() > rootPane.getHeight()) {
+                toRemove.add(powerUp);
+                PowerUpUserData userData = (PowerUpUserData) powerUp.getUserData();
+                activePowerUpIds.remove(Integer.valueOf(userData.getId()));
+            }
+        }
+
+        // Nettoyer
+        powerUps.removeAll(toRemove);
+        rootPane.getChildren().removeAll(toRemove);
+    }
+
+    // 9. Ajouter cette méthode pour appliquer les effets des power-ups
+    private void applyPowerUp(String type) {
+        // Le type est maintenant en minuscules à partir de PowerUpUserData
+        switch (type) {
+            case "shield":
+                // Bouclier: +2 points de vie
+                pointsVieActuels = Math.min(pointsVieActuels + 2, avionData.getPointsVie());
+                updateVieDisplay();
+                break;
+            case "bolt":
+                // Éclair: +25 points
+                score += 25;
+                updateScoreDisplay();
+                break;
+            case "star":
+                // Étoile: +50 points
+                score += 50;
+                updateScoreDisplay();
+                break;
+        }
+
+        // Faire une animation de texte qui indique le power-up obtenu
+        showPowerUpText(type);
+    }
+
+    // 10. Ajouter cette méthode pour afficher une animation de texte
+    private void showPowerUpText(String type) {
+        String text = "";
+        switch (type) {
+            case "shield": text = "+2 VIE"; break;
+            case "bolt": text = "+25 POINTS"; break;
+            case "star": text = "+50 POINTS"; break;
+        }
+
+        Label powerUpLabel = new Label(text);
+        powerUpLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: yellow; -fx-font-weight: bold;");
+
+        powerUpLabel.setLayoutX(playerShip.getLayoutX());
+        powerUpLabel.setLayoutY(playerShip.getLayoutY() - 30);
+
+        rootPane.getChildren().add(powerUpLabel);
+
+        // Animation
+        TranslateTransition tt = new TranslateTransition(Duration.millis(1000), powerUpLabel);
+        tt.setByY(-30);
+
+        FadeTransition ft = new FadeTransition(Duration.millis(1000), powerUpLabel);
+        ft.setFromValue(1.0);
+        ft.setToValue(0.0);
+
+        ParallelTransition pt = new ParallelTransition(tt, ft);
+        pt.setOnFinished(e -> rootPane.getChildren().remove(powerUpLabel));
+        pt.play();
     }
 
     private void startEnemyGenerator() {
@@ -390,6 +562,7 @@ public class JeuController {
             public void handle(long now) {
                 updatePlayerPosition();
                 updateProjectiles();
+                updatePowerUps(); // Ajouter cette ligne
                 handleShooting();
             }
         };
@@ -577,6 +750,9 @@ public class JeuController {
         if (gameLoop != null) {
             gameLoop.stop();
         }
+
+        // Nettoyer les power-ups
+        powerUps.clear();
 
         Platform.runLater(new Runnable() {
             @Override

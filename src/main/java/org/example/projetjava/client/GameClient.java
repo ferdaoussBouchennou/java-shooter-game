@@ -103,6 +103,14 @@ public class GameClient {
         this.clientId = id;
         System.out.println("ID client attribué: " + id);
     }
+    public void sendPowerUpSpawn(PowerUpData data) {
+        sendMessage(new NetworkMessage(NetworkMessage.MessageType.POWER_UP_SPAWN, data));
+    }
+
+    public void sendPowerUpCollected(int powerUpId) {
+        PowerUpCollectedData data = new PowerUpCollectedData(powerUpId, clientId);
+        sendMessage(new NetworkMessage(NetworkMessage.MessageType.POWER_UP_COLLECTED, data));
+    }
 
     private class ClientListener implements Runnable {
         private boolean running = true;
@@ -173,6 +181,16 @@ public class GameClient {
                         messageHandler.onChatMessage((ChatMessage) message.getData());
                     }
                     break;
+                case POWER_UP_SPAWN:
+                    if (messageHandler != null) {
+                        messageHandler.onPowerUpSpawn((PowerUpData) message.getData());
+                    }
+                    break;
+                case POWER_UP_COLLECTED:
+                    if (messageHandler != null) {
+                        messageHandler.onPowerUpCollected((PowerUpCollectedData) message.getData());
+                    }
+                    break;
                 default:
                     break;
             }
@@ -197,6 +215,8 @@ public class GameClient {
         void onGameStart();
         void onGameOver(int clientId);
         void onChatMessage(ChatMessage message);
+        void onPowerUpSpawn(PowerUpData data);
+        void onPowerUpCollected(PowerUpCollectedData data);
     }
     public static class EnemySpawnData implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -258,6 +278,65 @@ public class GameClient {
 
         public int getPoints() {
             return points;
+        }
+
+        public int getPlayerId() {
+            return playerId;
+        }
+    }
+    public static class PowerUpData implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private int powerUpId;
+        private String powerUpType;  // Format: "color_type" (ex: "Green_shield")
+        private double xPosition;
+        private int playerId;        // ID du joueur qui a généré le power-up
+
+        public PowerUpData(int powerUpId, String powerUpType, double xPosition, int playerId) {
+            this.powerUpId = powerUpId;
+            this.powerUpType = powerUpType;
+            this.xPosition = xPosition;
+            this.playerId = playerId;
+        }
+
+        // Pour les messages client-serveur où l'ID joueur sera défini par le serveur
+        public PowerUpData(int powerUpId, String powerUpType, double xPosition) {
+            this(powerUpId, powerUpType, xPosition, -1);
+        }
+
+        public int getPowerUpId() {
+            return powerUpId;
+        }
+
+        public String getPowerUpType() {
+            return powerUpType;
+        }
+
+        public double getXPosition() {
+            return xPosition;
+        }
+
+        public int getPlayerId() {
+            return playerId;
+        }
+
+        public void setPlayerId(int playerId) {
+            this.playerId = playerId;
+        }
+    }
+
+    // Structure de données pour la collecte des power-ups
+    public static class PowerUpCollectedData implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private int powerUpId;
+        private int playerId;  // ID du joueur qui a collecté le power-up
+
+        public PowerUpCollectedData(int powerUpId, int playerId) {
+            this.powerUpId = powerUpId;
+            this.playerId = playerId;
+        }
+
+        public int getPowerUpId() {
+            return powerUpId;
         }
 
         public int getPlayerId() {
