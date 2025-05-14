@@ -12,7 +12,9 @@ public class NetworkMessage implements Serializable {
         GAME_START,
         GAME_OVER,
         ENEMY_SPAWN,
-        CHAT_MESSAGE
+        CHAT_MESSAGE,
+        POWER_UP_SPAWN,
+        POWER_UP_COLLECTED
     }
 
     private final MessageType type;

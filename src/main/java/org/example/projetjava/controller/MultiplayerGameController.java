@@ -2,6 +2,8 @@ package org.example.projetjava.controller;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -68,6 +70,11 @@ public class MultiplayerGameController {
     private int nextEnemyId = 0;
     private int unreadMessageCount = 0;
     private boolean chatVisible = false;
+    private List<ImageView> powerUps = new ArrayList<>();
+    private long lastPowerUpTime = 0;
+    private int nextPowerUpId = 0;
+    private List<Integer> activePowerUpIds = new ArrayList<>();  // Pour suivre les IDs actifs
+
 
     public void initializeGame(String playerName, GameClient client, boolean isHost, String avionChoisi) {
         this.playerName = playerName;
@@ -220,7 +227,48 @@ public class MultiplayerGameController {
                     }
                 });
             }
+
+            @Override
+            public void onPowerUpSpawn(GameClient.PowerUpData data) {
+                Platform.runLater(() -> {
+                    // Ne créer le power-up que si nous ne l'avons pas créé nous-mêmes
+                    if (!isHost || data.getPlayerId() != client.getClientId()) {
+                        createPowerUp(data.getPowerUpId(), data.getPowerUpType(), data.getXPosition());
+                        System.out.println("Power-up généré depuis le réseau: ID=" + data.getPowerUpId());
+                    }
+                });
+            }
+
+            @Override
+            public void onPowerUpCollected(GameClient.PowerUpCollectedData data) {
+                Platform.runLater(() -> {
+                    // Trouver et supprimer le power-up collecté par l'autre joueur
+                    if (data.getPlayerId() != client.getClientId()) {
+                        removePowerUpById(data.getPowerUpId());
+                        System.out.println("Power-up collecté par l'autre joueur: ID=" + data.getPowerUpId());
+                    }
+                });
+            }
         });
+    }
+    private void removePowerUpById(int powerUpId) {
+        ImageView powerUpToRemove = null;
+
+        for (ImageView powerUp : powerUps) {
+            if (powerUp.getUserData() instanceof PowerUpUserData) {
+                PowerUpUserData userData = (PowerUpUserData) powerUp.getUserData();
+                if (userData.getId() == powerUpId) {
+                    powerUpToRemove = powerUp;
+                    break;
+                }
+            }
+        }
+
+        if (powerUpToRemove != null) {
+            rootPane.getChildren().remove(powerUpToRemove);
+            powerUps.remove(powerUpToRemove);
+            activePowerUpIds.remove(Integer.valueOf(powerUpId));
+        }
     }
 
     private void initializePlayerShip() {
@@ -335,11 +383,12 @@ public class MultiplayerGameController {
     }
 
     private void startGameThreads() {
-        gameExecutor = Executors.newScheduledThreadPool(3);
+        gameExecutor = Executors.newScheduledThreadPool(5); // Augmenté pour gérer les power-ups
         startEnemyGenerator();
         startEnemyMovement();
         startCollisionDetection();
-        startOtherPlayerShooting(); // Démarrer le thread qui gère les tirs de l'autre joueur
+        startOtherPlayerShooting();
+        startPowerUpGenerator(); // Nouvelle méthode
 
         startMainGameLoop();
     }
@@ -359,6 +408,7 @@ public class MultiplayerGameController {
                     updatePlayerPosition();
                     updateProjectiles();
                     updateOtherPlayerProjectiles(); // Mettre à jour les projectiles de l'autre joueur
+                    updatePowerUps();
                     handleShooting();
 
                     // Envoyer la mise à jour moins fréquemment pour réduire la charge réseau
@@ -702,7 +752,175 @@ public class MultiplayerGameController {
     private void updateScoreDisplay() {
         scoreLabel.setText("Vous: " + score);
     }
+    private void startPowerUpGenerator() {
+        gameExecutor.scheduleAtFixedRate(() -> {
+            if (gameRunning && isHost) {
+                long currentTime = System.currentTimeMillis();
+                // Générer un power-up toutes les 20 secondes environ
+                if (currentTime - lastPowerUpTime > 20000 && Math.random() < 0.1) {
+                    Platform.runLater(() -> {
+                        generatePowerUp();
+                    });
+                    lastPowerUpTime = currentTime;
+                }
+            }
+        }, 5000, 1000, TimeUnit.MILLISECONDS);
+    }
+    private void generatePowerUp() {
+        // Définir les types de power-ups avec leurs chemins corrects
+        String[] powerUpTypes = {"Green_shield", "Blue_bolt", "Red_star"};
+        String powerUpType = powerUpTypes[(int)(Math.random() * powerUpTypes.length)];
 
+        // Position aléatoire sur l'axe X
+        double margin = 40;
+        double xPos = margin + Math.random() * (rootPane.getWidth() - 60);
+
+        // Générer un ID unique pour ce power-up
+        int powerUpId = nextPowerUpId++;
+
+        // Créer le power-up localement
+        createPowerUp(powerUpId, powerUpType, xPos);
+
+        // Envoyer au serveur pour synchronisation
+        if (client != null) {
+            GameClient.PowerUpData powerUpData = new GameClient.PowerUpData(powerUpId, powerUpType, xPos);
+            client.sendPowerUpSpawn(powerUpData);
+        }
+    }
+    private void createPowerUp(int powerUpId, String powerUpType, double xPos) {
+        try {
+            // Extraire les informations du type (couleur et type)
+            String[] parts = powerUpType.split("_");
+            String color = parts[0].toLowerCase();
+            String type = parts[1].toLowerCase();
+
+            // Construire le chemin d'accès correct
+            String imagePath = "/org/example/projetjava/kenney_space-shooter-redux/PNG/Power-ups/powerup" + color + "_" + type + ".png";
+
+            ImageView powerUp = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
+            powerUp.setFitWidth(30);
+            powerUp.setFitHeight(30);
+
+            // Stocker l'ID et le type dans powerUp.userData
+            powerUp.setUserData(new PowerUpUserData(powerUpId, type));
+
+            powerUp.setLayoutX(xPos);
+            powerUp.setLayoutY(-30);
+
+            rootPane.getChildren().add(powerUp);
+            powerUps.add(powerUp);
+            activePowerUpIds.add(powerUpId);
+
+            System.out.println("Power-up généré: ID=" + powerUpId + ", Type=" + powerUpType);
+
+            // Animer l'apparition du power-up
+            FadeTransition ft = new FadeTransition(Duration.millis(500), powerUp);
+            ft.setFromValue(0.0);
+            ft.setToValue(1.0);
+            ft.play();
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la création du power-up: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    private void updatePowerUps() {
+        List<ImageView> toRemove = new ArrayList<>();
+
+        for (ImageView powerUp : powerUps) {
+            // Mouvement
+            powerUp.setLayoutY(powerUp.getLayoutY() + 1.5);
+
+            // Rotation pour effet visuel
+            powerUp.setRotate((powerUp.getRotate() + 1) % 360);
+
+            // Vérifier collision avec le joueur
+            if (checkCollision(playerShip, powerUp)) {
+                PowerUpUserData userData = (PowerUpUserData) powerUp.getUserData();
+
+                // Appliquer l'effet du power-up localement
+                applyPowerUp(userData.getType());
+
+                // Notifier le serveur que ce power-up a été collecté
+                if (client != null) {
+                    client.sendPowerUpCollected(userData.getId());
+                }
+
+                toRemove.add(powerUp);
+                continue;
+            }
+
+            // Supprimer si hors écran
+            if (powerUp.getLayoutY() > rootPane.getHeight()) {
+                toRemove.add(powerUp);
+
+                // Notifier le serveur que ce power-up est hors écran
+                PowerUpUserData userData = (PowerUpUserData) powerUp.getUserData();
+                if (client != null) {
+                    client.sendPowerUpCollected(userData.getId());
+                }
+            }
+        }
+
+        // Nettoyer
+        for (ImageView powerUp : toRemove) {
+            PowerUpUserData userData = (PowerUpUserData) powerUp.getUserData();
+            activePowerUpIds.remove(Integer.valueOf(userData.getId()));
+        }
+        powerUps.removeAll(toRemove);
+        rootPane.getChildren().removeAll(toRemove);
+    }
+    private void applyPowerUp(String type) {
+        // Le type est maintenant en minuscules à partir de PowerUpUserData
+        switch (type) {
+            case "shield":
+                // Bouclier: +2 points de vie
+                pointsVieActuels = Math.min(pointsVieActuels + 2, avionData.getPointsVie());
+                vieLabel.setText("Vie: " + pointsVieActuels + "/" + avionData.getPointsVie());
+                break;
+            case "bolt":
+                // Éclair: +25 points
+                score += 25;
+                updateScoreDisplay();
+                break;
+            case "star":
+                // Étoile: +50 points
+                score += 50;
+                updateScoreDisplay();
+                break;
+        }
+
+        // Faire une animation de texte qui indique le power-up obtenu
+        showPowerUpText(type);
+    }
+
+    private void showPowerUpText(String type) {
+        String text = "";
+        switch (type) {
+            case "shield": text = "+2 VIE"; break;
+            case "bolt": text = "+25 POINTS"; break;
+            case "star": text = "+50 POINTS"; break;
+        }
+
+        Label powerUpLabel = new Label(text);
+        powerUpLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: yellow; -fx-font-weight: bold;");
+
+        powerUpLabel.setLayoutX(playerShip.getLayoutX());
+        powerUpLabel.setLayoutY(playerShip.getLayoutY() - 30);
+
+        rootPane.getChildren().add(powerUpLabel);
+
+        // Animation
+        TranslateTransition tt = new TranslateTransition(Duration.millis(1000), powerUpLabel);
+        tt.setByY(-30);
+
+        FadeTransition ft = new FadeTransition(Duration.millis(1000), powerUpLabel);
+        ft.setFromValue(1.0);
+        ft.setToValue(0.0);
+
+        ParallelTransition pt = new ParallelTransition(tt, ft);
+        pt.setOnFinished(e -> rootPane.getChildren().remove(powerUpLabel));
+        pt.play();
+    }
     private void gameOver() {
         gameRunning = false;
 
@@ -836,5 +1054,23 @@ public class MultiplayerGameController {
 
         // Remettre le focus sur la zone de jeu pour continuer à recevoir les événements clavier
         rootPane.requestFocus();
+    }
+    // 4. Créez la classe PowerUpUserData pour stocker les informations du power-up
+    private static class PowerUpUserData {
+        private int id;
+        private String type;
+
+        public PowerUpUserData(int id, String type) {
+            this.id = id;
+            this.type = type;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getType() {
+            return type;
+        }
     }
 }
