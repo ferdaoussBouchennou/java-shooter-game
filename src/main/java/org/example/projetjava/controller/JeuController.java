@@ -34,7 +34,7 @@ public class JeuController {
     @FXML private ImageView backgroundImage;
     @FXML private Label scoreLabel;
     @FXML private Label vieLabel;
-    @FXML private Label niveauLabel; // Nouveau label pour afficher le niveau actuel
+    @FXML private Label niveauLabel;
 
     private ImageView playerShip;
     private Avion avionData;
@@ -72,9 +72,6 @@ public class JeuController {
             return type;
         }
     }
-
-
-
     @FXML
     private void initialize() {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
@@ -304,11 +301,11 @@ public class JeuController {
     }
 
     private void startGameThreads() {
-        gameExecutor = Executors.newScheduledThreadPool(3);
+        gameExecutor = Executors.newScheduledThreadPool(4);
         startEnemyGenerator();
         startEnemyMovement();
         startCollisionDetection();
-        startPowerUpGenerator(); // Ajouter cette ligne
+        startPowerUpGenerator();
         startMainGameLoop();
     }
     // 4. Ajouter cette méthode pour générer les power-ups
@@ -431,8 +428,6 @@ public class JeuController {
         // Faire une animation de texte qui indique le power-up obtenu
         showPowerUpText(type);
     }
-
-    // 10. Ajouter cette méthode pour afficher une animation de texte
     private void showPowerUpText(String type) {
         String text = "";
         switch (type) {
