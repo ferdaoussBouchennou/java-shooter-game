@@ -14,7 +14,7 @@ Un jeu de tir 2D développé en JavaFX dans le cadre du module de Programmation 
 
 ---
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
 ### 🔹 Mode Mono-joueur
 
