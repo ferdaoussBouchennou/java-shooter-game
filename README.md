@@ -81,7 +81,7 @@ Un jeu de tir 2D développé en JavaFX dans le cadre du module de Programmation 
 
 ---
 
-## 🧑‍💻 Équipe projet
+## 🧑‍💻 Équipe du projet
 
 **Ferdaouss Bouchennou**
 
